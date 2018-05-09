@@ -3,16 +3,14 @@ package com.project.database;
 import oracle.jdbc.OracleTypes;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
-
-
-public class DeanOffice {
+class DeanOffice {
     private JTabbedPane tabbedPane1;
     private JPanel panel1;
-    private DatabaseConnection dbConnection;
+    private final DatabaseConnection dbConnection;
 
     private JTextField firstNameTextField;
     private JTextField patherNameTextField;
@@ -42,12 +40,9 @@ public class DeanOffice {
         dbConnection = new DatabaseConnection();
 
         groupComboBox.removeAllItems();
-        List<String> groupList = listGroups();
-        for (String group : groupList) {
-            groupComboBox.addItem(group);
-        }
+        initialiseGroups();
 
-
+        addStudentButton.addActionListener(new AddStudentButtonClicked());
     }
 
     public static void main(String[] args) {
@@ -58,8 +53,9 @@ public class DeanOffice {
         frame.setVisible(true);
     }
 
-    private List<String> listGroups() {
-        List<String> groupsList = new ArrayList<>();
+    private void initialiseGroups() {
+        final String GROUP_NAME_COLUMN = "GROUP_NAME";
+        final String GROUP_ID_COLUMN = "GROUP_ID";
 
         Connection connection = dbConnection.getConnection();
 
@@ -71,12 +67,49 @@ public class DeanOffice {
             ResultSet resultSet = (ResultSet)cs.getObject(1);
 
             while (resultSet.next()) {
-                groupsList.add(resultSet.getString("group_name"));
+                String groupName = resultSet.getString(GROUP_NAME_COLUMN);
+                int groupId = resultSet.getInt(GROUP_ID_COLUMN);
+                ComboItem comboItem = new ComboItem(groupId, groupName);
+                groupComboBox.addItem(comboItem);
             }
         } catch (Exception e) {
             System.out.println("Exception: " + e);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+    }
 
-        return groupsList;
+    private class AddStudentButtonClicked implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Connection connection = dbConnection.getConnection();
+
+            try {
+                CallableStatement cs = connection.prepareCall("{ call INSERT_STUDENT(?, ?, ?, ?) }");
+
+                cs.setString(1, firstNameTextField.getText());
+                cs.setString(2, lastNameTextField.getText());
+                cs.setString(3, patherNameTextField.getText());
+
+                ComboItem selectedItem = (ComboItem) groupComboBox.getSelectedItem();
+                int groupId = selectedItem.getId();
+                cs.setInt(4, groupId);
+
+                cs.execute();
+
+            } catch (Exception exception) {
+                System.out.println("Exception: " + exception);
+            } finally {
+                try {
+                    connection.close();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
     }
 }
