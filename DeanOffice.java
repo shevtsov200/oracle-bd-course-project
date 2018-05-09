@@ -1,10 +1,16 @@
 package com.project.database;
 
 import javax.swing.*;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+
 
 public class DeanOffice {
     private JTabbedPane tabbedPane1;
     private JPanel panel1;
+    private DatabaseConnection dbConnection;
 
     private JTextField firstNameTextField;
     private JTextField patherNameTextField;
@@ -30,6 +36,16 @@ public class DeanOffice {
         patherNameLabel.setText(PATHER_NAME_TEXT);
         groupNameLabel.setText(GROUP_TEXT);
         addStudentButton.setText(ADD_STUDENT_TEXT);
+
+        dbConnection = new DatabaseConnection();
+
+        groupComboBox.removeAllItems();
+        List<String> groupList = listGroups();
+        for (String group : groupList) {
+            groupComboBox.addItem(group);
+        }
+
+
     }
 
     public static void main(String[] args) {
@@ -38,5 +54,27 @@ public class DeanOffice {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+    }
+
+    private List<String> listGroups() {
+        List<String> groupsList = new ArrayList<>();
+
+        Connection connection = dbConnection.getConnection();
+
+        try {
+            Statement statement = connection.createStatement();
+
+            String query = "SELECT group_name FROM GROUPS";
+
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                groupsList.add(resultSet.getString("group_name"));
+            }
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+
+        return groupsList;
     }
 }
