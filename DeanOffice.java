@@ -1,5 +1,7 @@
 package com.project.database;
 
+import oracle.jdbc.OracleTypes;
+
 import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -62,11 +64,11 @@ public class DeanOffice {
         Connection connection = dbConnection.getConnection();
 
         try {
-            Statement statement = connection.createStatement();
+            CallableStatement cs = connection.prepareCall("{ call ? := SELECT_GROUPS }");
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
 
-            String query = "SELECT group_name FROM GROUPS";
-
-            ResultSet resultSet = statement.executeQuery(query);
+            ResultSet resultSet = (ResultSet)cs.getObject(1);
 
             while (resultSet.next()) {
                 groupsList.add(resultSet.getString("group_name"));
