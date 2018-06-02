@@ -6,9 +6,13 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static javax.swing.UIManager.put;
 
 class DeanOffice {
-    private JTabbedPane tabbedPane1;
+    private JTabbedPane addStudentPane;
     private JPanel panel1;
     private final DatabaseConnection dbConnection;
 
@@ -23,7 +27,11 @@ class DeanOffice {
     private JLabel groupNameLabel;
 
     private JButton addStudentButton;
+    private JPanel addStudentPanel;
 
+    private static final Map<Integer, String> PANE_TITLES = new HashMap<Integer, String>() {{
+        put(0, "Добавить студента");
+    }};
     private static final String FIRST_NAME_TEXT = "Имя";
     private static final String LAST_NAME_TEXT = "Фамилия";
     private static final String PATHER_NAME_TEXT = "Отчество";
@@ -31,12 +39,17 @@ class DeanOffice {
     private static final String ADD_STUDENT_TEXT = "Добавить студента";
 
     public DeanOffice() {
+
         lastNameLabel.setText(LAST_NAME_TEXT);
         firstNameLabel.setText(FIRST_NAME_TEXT);
         patherNameLabel.setText(PATHER_NAME_TEXT);
         groupNameLabel.setText(GROUP_TEXT);
         addStudentButton.setText(ADD_STUDENT_TEXT);
 
+        for (int i = 0; i < addStudentPane.getTabCount(); ++i) {
+            addStudentPane.setTitleAt(i, PANE_TITLES.get(i));
+        }
+        
         dbConnection = new DatabaseConnection();
 
         groupComboBox.removeAllItems();
