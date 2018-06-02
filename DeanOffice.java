@@ -1,13 +1,16 @@
 package com.project.database;
 
+import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory;
 import oracle.jdbc.OracleTypes;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import static javax.swing.UIManager.put;
 
@@ -28,6 +31,8 @@ class DeanOffice {
 
     private JButton addStudentButton;
     private JPanel addStudentPanel;
+    private JSplitPane studentSplitPane;
+    private JTable studentsTable;
 
     private static final Map<Integer, String> PANE_TITLES = new HashMap<Integer, String>() {{
         put(0, "Добавить студента");
@@ -49,12 +54,17 @@ class DeanOffice {
         for (int i = 0; i < addStudentPane.getTabCount(); ++i) {
             addStudentPane.setTitleAt(i, PANE_TITLES.get(i));
         }
-        
+
         dbConnection = new DatabaseConnection();
 
         groupComboBox.removeAllItems();
         initialiseGroups();
 
+        try {
+            populateTable();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         addStudentButton.addActionListener(new AddStudentButtonClicked());
     }
 
@@ -94,6 +104,38 @@ class DeanOffice {
                 e.printStackTrace();
             }
         }
+    }
+
+    private DefaultTableModel buildTableModel(ResultSet resultSet) throws SQLException {
+
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        Vector<String> columnNames = new Vector<>();
+        int columnCount = metaData.getColumnCount();
+        for(int column = 1; column <= columnCount; ++column) {
+            columnNames.add(metaData.getColumnName(column));
+        }
+
+        Vector<Vector<Object>> data = new Vector<>();
+        while (resultSet.next()) {
+            Vector<Object> vector = new Vector<>();
+            for (int columnIndex = 1; columnIndex <= columnCount; ++columnIndex) {
+                vector.add(resultSet.getObject(columnIndex));
+            }
+            data.add(vector);
+        }
+        return new DefaultTableModel(data, columnNames);
+    }
+
+    private void populateTable() throws SQLException {
+        Connection connection = dbConnection.getConnection();
+
+        CallableStatement cs = connection.prepareCall("{ call ? := SELECT_STUDENTS }");
+        cs.registerOutParameter(1, OracleTypes.CURSOR);
+        cs.execute();
+
+        ResultSet resultSet = (ResultSet)cs.getObject(1);
+        DefaultTableModel tableModel = buildTableModel(resultSet);
+        studentsTable.setModel(tableModel);
     }
 
     private class AddStudentButtonClicked implements ActionListener {
