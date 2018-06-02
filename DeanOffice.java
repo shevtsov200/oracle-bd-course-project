@@ -87,6 +87,7 @@ class DeanOffice {
 
                         int groupId = resultSet.getInt("group_id");
                         String groupName = resultSet.getString("group_name");
+                        System.out.println("selected " + groupId + " " + groupName);
                         groupComboBox.setSelectedItem(new ComboItem(groupId, groupName));
                     }
 
@@ -123,6 +124,7 @@ class DeanOffice {
             while (resultSet.next()) {
                 String groupName = resultSet.getString(GROUP_NAME_COLUMN);
                 int groupId = resultSet.getInt(GROUP_ID_COLUMN);
+                System.out.println(groupName + " " + groupId);
                 ComboItem comboItem = new ComboItem(groupId, groupName);
                 groupComboBox.addItem(comboItem);
             }

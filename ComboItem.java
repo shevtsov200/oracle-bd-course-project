@@ -16,4 +16,19 @@ class ComboItem {
     public String toString() {
         return description;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+
+        if(!(object instanceof ComboItem)) {
+            return false;
+        }
+
+        ComboItem comboItem = (ComboItem) object;
+
+        return comboItem.id == this.id;
+    }
 }
