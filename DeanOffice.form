@@ -108,12 +108,19 @@
                   </component>
                 </children>
               </grid>
-              <component id="a1a4d" class="javax.swing.JTable" binding="studentsTable">
+              <scrollpane id="ff9b5">
                 <constraints>
                   <splitpane position="right"/>
                 </constraints>
                 <properties/>
-              </component>
+                <border type="none"/>
+                <children>
+                  <component id="a1a4d" class="javax.swing.JTable" binding="studentsTable">
+                    <constraints/>
+                    <properties/>
+                  </component>
+                </children>
+              </scrollpane>
             </children>
           </splitpane>
         </children>

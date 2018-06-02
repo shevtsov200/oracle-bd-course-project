@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +68,35 @@ class DeanOffice {
             e.printStackTrace();
         }
         addStudentButton.addActionListener(new AddStudentButtonClicked());
+        studentsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                DefaultTableModel tableModel = (DefaultTableModel) studentsTable.getModel();
+
+                int selectedRowIndex = studentsTable.getSelectedRow();
+                String id = tableModel.getValueAt(selectedRowIndex,0).toString();
+
+                try {
+                    ResultSet resultSet = dbConnection.getData("SELECT_STUDENT", id);
+
+                    while(resultSet.next()) {
+                        firstNameTextField.setText(resultSet.getString("first_name"));
+                        lastNameTextField.setText(resultSet.getString("last_name"));
+                        patherNameTextField.setText(resultSet.getString("pather_name"));
+
+                        int groupId = resultSet.getInt("group_id");
+                        String groupName = resultSet.getString("group_name");
+                        groupComboBox.setSelectedItem(new ComboItem(groupId, groupName));
+                    }
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -127,13 +158,7 @@ class DeanOffice {
     }
 
     private void populateTable() throws SQLException {
-        Connection connection = dbConnection.getConnection();
-
-        CallableStatement cs = connection.prepareCall("{ call ? := SELECT_STUDENTS }");
-        cs.registerOutParameter(1, OracleTypes.CURSOR);
-        cs.execute();
-
-        ResultSet resultSet = (ResultSet)cs.getObject(1);
+        ResultSet resultSet = dbConnection.getData("SELECT_STUDENTS");
         DefaultTableModel tableModel = buildTableModel(resultSet);
         studentsTable.setModel(tableModel);
     }
