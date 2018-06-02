@@ -13,11 +13,11 @@ public class SqlParameter {
         INOUT
     }
 
-    private final parameterDirections isOutParameter;
+    private final parameterDirections parameterDirection;
 
     public SqlParameter(String value, parameterDirections isOutParameter, int oracleType) {
         this.value = value;
-        this.isOutParameter = isOutParameter;
+        this.parameterDirection = isOutParameter;
         this.oracleType = oracleType;
     }
 
@@ -25,8 +25,8 @@ public class SqlParameter {
         return value;
     }
 
-    public parameterDirections getIsOutParameter() {
-        return isOutParameter;
+    public parameterDirections getParameterDirection() {
+        return parameterDirection;
     }
     public int getOracleType() {
         return oracleType;

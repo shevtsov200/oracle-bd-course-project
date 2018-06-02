@@ -1,6 +1,5 @@
 package com.project.database;
 
-import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory;
 import oracle.jdbc.OracleTypes;
 
 import javax.swing.*;
@@ -14,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import static javax.swing.UIManager.put;
-
 class DeanOffice {
     private JTabbedPane addStudentPane;
     private JPanel panel1;
@@ -24,7 +21,7 @@ class DeanOffice {
     private JTextField firstNameTextField;
     private JTextField patherNameTextField;
     private JTextField lastNameTextField;
-    private JComboBox groupComboBox;
+    private JComboBox<ComboItem> groupComboBox;
 
     private JLabel lastNameLabel;
     private JLabel firstNameLabel;
@@ -46,7 +43,12 @@ class DeanOffice {
     private static final String LAST_NAME_TEXT = "Фамилия";
     private static final String PATHER_NAME_TEXT = "Отчество";
     private static final String GROUP_TEXT = "Группа";
-    private static final String ADD_STUDENT_TEXT = "Добавить студента";
+
+    private static final String ADD_BUTTON_TEXT = "Создать";
+    private static final String UPDATE_BUTTON_TEXT = "Обновить";
+    private static final String DELETE_BUTTON_TEXT = "Удалить";
+
+    private int currentRowId = 0;
 
     public DeanOffice() {
 
@@ -54,7 +56,10 @@ class DeanOffice {
         firstNameLabel.setText(FIRST_NAME_TEXT);
         patherNameLabel.setText(PATHER_NAME_TEXT);
         groupNameLabel.setText(GROUP_TEXT);
-        addStudentButton.setText(ADD_STUDENT_TEXT);
+
+        addStudentButton.setText(ADD_BUTTON_TEXT);
+        updateStudentButton.setText(UPDATE_BUTTON_TEXT);
+        deleteStudentButton.setText(DELETE_BUTTON_TEXT);
 
         for (int i = 0; i < addStudentPane.getTabCount(); ++i) {
             addStudentPane.setTitleAt(i, PANE_TITLES.get(i));
@@ -70,7 +75,11 @@ class DeanOffice {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         addStudentButton.addActionListener(new AddStudentButtonClicked());
+        updateStudentButton.addActionListener(new UpdateStudentButtonClicked());
+        deleteStudentButton.addActionListener(new DeleteStudentButtonClicked());
+
         studentsTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -80,8 +89,14 @@ class DeanOffice {
                 int selectedRowIndex = studentsTable.getSelectedRow();
                 String id = tableModel.getValueAt(selectedRowIndex,0).toString();
 
+                SqlParameter[] parameters = new SqlParameter[] {
+                        new SqlParameter("",SqlParameter.parameterDirections.OUT, OracleTypes.CURSOR),
+                        new SqlParameter(id, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
+                };
+
                 try {
-                    ResultSet resultSet = dbConnection.getData("SELECT_STUDENT", id);
+
+                    ResultSet resultSet = dbConnection.executeProcedure("SELECT_STUDENT", parameters);
 
                     while(resultSet.next()) {
                         firstNameTextField.setText(resultSet.getString("first_name"));
@@ -92,6 +107,8 @@ class DeanOffice {
                         String groupName = resultSet.getString("group_name");
                         System.out.println("selected " + groupId + " " + groupName);
                         groupComboBox.setSelectedItem(new ComboItem(groupId, groupName));
+
+                        currentRowId = resultSet.getInt("people_id");
                     }
 
                 } catch (SQLException e) {
@@ -106,6 +123,7 @@ class DeanOffice {
         frame.setContentPane(new DeanOffice().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
+        System.out.println("packed frame");
         frame.setVisible(true);
     }
 
@@ -161,7 +179,11 @@ class DeanOffice {
     }
 
     private void populateTable() throws SQLException {
-        ResultSet resultSet = dbConnection.getData("SELECT_STUDENTS");
+        SqlParameter[] parameters = new SqlParameter[] {
+                new SqlParameter("",SqlParameter.parameterDirections.OUT, OracleTypes.CURSOR),
+        };
+
+        ResultSet resultSet = dbConnection.executeProcedure("SELECT_STUDENTS", parameters);
         DefaultTableModel tableModel = buildTableModel(resultSet);
         studentsTable.setModel(tableModel);
     }
@@ -172,14 +194,52 @@ class DeanOffice {
             ComboItem selectedItem = (ComboItem) groupComboBox.getSelectedItem();
             int groupId = selectedItem.getId();
             SqlParameter[] parameters = new SqlParameter[] {
-                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
                     new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
                     new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
                     new SqlParameter(Integer.toString(groupId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
             };
 
             try {
                 dbConnection.executeProcedure("INSERT_STUDENT", parameters);
+                populateTable();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    private class UpdateStudentButtonClicked implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ComboItem selectedItem = (ComboItem) groupComboBox.getSelectedItem();
+            int groupId = selectedItem.getId();
+            SqlParameter[] parameters = new SqlParameter[] {
+                    new SqlParameter(Integer.toString(currentRowId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(Integer.toString(groupId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
+            };
+
+            try {
+                dbConnection.executeProcedure("UPDATE_STUDENT", parameters);
+                populateTable();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    private class DeleteStudentButtonClicked implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            SqlParameter[] parameters = new SqlParameter[] {
+                    new SqlParameter(Integer.toString(currentRowId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+            };
+
+            try {
+                dbConnection.executeProcedure("DELETE_STUDENT", parameters);
                 populateTable();
             } catch (SQLException e1) {
                 e1.printStackTrace();

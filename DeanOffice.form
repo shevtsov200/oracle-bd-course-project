@@ -35,7 +35,9 @@
                 <children>
                   <component id="a1a4d" class="javax.swing.JTable" binding="studentsTable">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <autoResizeMode value="2"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>
