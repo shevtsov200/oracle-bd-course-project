@@ -35,6 +35,9 @@ class DeanOffice {
     private JPanel addStudentPanel;
     private JSplitPane studentSplitPane;
     private JTable studentsTable;
+    private JPanel buttonsPanel;
+    private JButton updateStudentButton;
+    private JButton deleteStudentButton;
 
     private static final Map<Integer, String> PANE_TITLES = new HashMap<Integer, String>() {{
         put(0, "Добавить студента");
@@ -94,8 +97,6 @@ class DeanOffice {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-
-
             }
         });
     }
@@ -168,29 +169,20 @@ class DeanOffice {
     private class AddStudentButtonClicked implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            Connection connection = dbConnection.getConnection();
+            ComboItem selectedItem = (ComboItem) groupComboBox.getSelectedItem();
+            int groupId = selectedItem.getId();
+            SqlParameter[] parameters = new SqlParameter[] {
+                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(Integer.toString(groupId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
+            };
 
             try {
-                CallableStatement cs = connection.prepareCall("{ call INSERT_STUDENT(?, ?, ?, ?) }");
-
-                cs.setString(1, firstNameTextField.getText());
-                cs.setString(2, lastNameTextField.getText());
-                cs.setString(3, patherNameTextField.getText());
-
-                ComboItem selectedItem = (ComboItem) groupComboBox.getSelectedItem();
-                int groupId = selectedItem.getId();
-                cs.setInt(4, groupId);
-
-                cs.execute();
-
-            } catch (Exception exception) {
-                System.out.println("Exception: " + exception);
-            } finally {
-                try {
-                    connection.close();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
+                dbConnection.executeProcedure("INSERT_STUDENT", parameters);
+                populateTable();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
             }
         }
     }

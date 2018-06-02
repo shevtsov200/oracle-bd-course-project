@@ -5,6 +5,8 @@ import oracle.jdbc.OracleTypes;
 
 import java.sql.*;
 import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
 
 class DatabaseConnection {
     private Connection connection;
@@ -67,5 +69,26 @@ class DatabaseConnection {
         ResultSet resultSet = (ResultSet)cs.getObject(1);
 
         return(resultSet);
+    }
+
+    void executeProcedure(String procedureName, SqlParameter[] procedureParameters) throws SQLException {
+        Connection connection = getConnection();
+
+        List<String> templateCharacters = Collections.nCopies(procedureParameters.length, "?");
+        String parameterString = String.join(", ", templateCharacters);
+
+        String callString = "{ call " + procedureName + "( " + parameterString + ") }";
+
+        CallableStatement cs = connection.prepareCall(callString);
+
+        for (int i = 0; i < procedureParameters.length; ++i) {
+            if(procedureParameters[i].getIsOutParameter() == SqlParameter.parameterDirections.OUT) {
+                cs.registerOutParameter(i+1,procedureParameters[i].getOracleType());
+            } else if (procedureParameters[i].getIsOutParameter() == SqlParameter.parameterDirections.IN) {
+                cs.setString(i+1, procedureParameters[i].getValue());
+            }
+        }
+
+        cs.execute();
     }
 }
