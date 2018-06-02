@@ -1,7 +1,5 @@
 package com.project.database;
 
-import oracle.jdbc.OracleTypes;
-
 import java.sql.*;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,7 +64,11 @@ class DatabaseConnection {
 
         cs.execute();
 
-        ResultSet resultSet = (ResultSet)cs.getObject(1);
-        return(resultSet);
+        if (outParameterExists) {
+            ResultSet resultSet = (ResultSet)cs.getObject(1);
+            return(resultSet);
+        } else {
+            return(null);
+        }
     }
 }
