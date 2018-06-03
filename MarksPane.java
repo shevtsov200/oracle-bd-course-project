@@ -19,26 +19,22 @@ import java.util.Properties;
 import java.util.Vector;
 
 public class MarksPane {
-    private JSplitPane teacherSplitPane;
+    private JSplitPane marksSplitPane;
 
     private final DatabaseConnection dbConnection;
-
-    private JTextField firstNameTextField;
-    private JTextField patherNameTextField;
-    private JTextField lastNameTextField;
 
     private JLabel studentLabel;
     private JLabel subjectLabel;
     private JLabel teacherLabel;
 
     private JButton createButton;
-    private JPanel addStudentPanel;
+    private JPanel comboBoxesPanel;
     private JSplitPane studentSplitPane;
     private JTable dbTable;
     private JPanel buttonsPanel;
     private JButton updateButton;
     private JButton deleteButton;
-    private JPanel teacherPanel;
+    private JPanel marksSplitPanel;
     private JComboBox studentComboBox;
     private JComboBox subjectComboBox;
     private JComboBox teacherComboBox;
@@ -47,9 +43,11 @@ public class MarksPane {
     private JComboBox markComboBox;
     private JLabel dateLabel;
 
-    private static final String FIRST_NAME_TEXT = "Имя";
-    private static final String LAST_NAME_TEXT = "Фамилия";
-    private static final String PATHER_NAME_TEXT = "Отчество";
+    private static final String STUDENT_TEXT = "Студент";
+    private static final String SUBJECT_TEXT = "Предмет";
+    private static final String TEACHER_TEXT = "Преподаватель";
+    private static final String MARK_TEXT = "Оценка";
+    private static final String DATE_TEXT = "Дата";
 
     private static final String ADD_BUTTON_TEXT = "Создать";
     private static final String UPDATE_BUTTON_TEXT = "Обновить";
@@ -58,10 +56,11 @@ public class MarksPane {
     private int currentRowId = 0;
 
     public MarksPane() {
-
-        studentLabel.setText(LAST_NAME_TEXT);
-        subjectLabel.setText(FIRST_NAME_TEXT);
-        teacherLabel.setText(PATHER_NAME_TEXT);
+        studentLabel.setText(STUDENT_TEXT);
+        subjectLabel.setText(SUBJECT_TEXT);
+        teacherLabel.setText(TEACHER_TEXT);
+        markLabel.setText(MARK_TEXT);
+        dateLabel.setText(DATE_TEXT);
 
         createButton.setText(ADD_BUTTON_TEXT);
         updateButton.setText(UPDATE_BUTTON_TEXT);
@@ -74,6 +73,12 @@ public class MarksPane {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        initialiseStudents();
+        initialiseTeachers();
+        initialiseSubjects();
+        initialiseMarks();
+
 
         createButton.addActionListener(new MarksPane.CreateButtonClicked());
         updateButton.addActionListener(new MarksPane.UpdateButtonClicked());
@@ -94,14 +99,14 @@ public class MarksPane {
                 };
 
                 try {
-                    ResultSet resultSet = dbConnection.executeProcedure("SELECT_TEACHER", parameters);
+                    ResultSet resultSet = dbConnection.executeProcedure("SELECT_MARK", parameters);
 
                     while(resultSet.next()) {
-                        firstNameTextField.setText(resultSet.getString("first_name"));
+                        /*firstNameTextField.setText(resultSet.getString("first_name"));
                         lastNameTextField.setText(resultSet.getString("last_name"));
                         patherNameTextField.setText(resultSet.getString("pather_name"));
 
-                        currentRowId = resultSet.getInt("people_id");
+                        currentRowId = resultSet.getInt("people_id");*/
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -112,7 +117,7 @@ public class MarksPane {
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("DeanOffice");
-        frame.setContentPane(new MarksPane().teacherPanel);
+        frame.setContentPane(new MarksPane().marksSplitPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         System.out.println("packed frame");
@@ -150,7 +155,6 @@ public class MarksPane {
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
         UtilDateModel model = new UtilDateModel();
         Properties properties = new Properties();
         properties.put("test.today", "Today");
@@ -164,9 +168,9 @@ public class MarksPane {
         @Override
         public void actionPerformed(ActionEvent e) {
             SqlParameter[] parameters = new SqlParameter[] {
-                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
+//                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+//                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+//                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
             };
 
             try {
@@ -182,10 +186,10 @@ public class MarksPane {
         @Override
         public void actionPerformed(ActionEvent e) {
             SqlParameter[] parameters = new SqlParameter[] {
-                    new SqlParameter(Integer.toString(currentRowId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
+//                    new SqlParameter(Integer.toString(currentRowId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+//                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+//                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+//                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
             };
 
             try {
@@ -211,5 +215,68 @@ public class MarksPane {
                 e1.printStackTrace();
             }
         }
+    }
+
+    private void initialiseStudents() {
+        try {
+            SqlParameter[] parameters = new SqlParameter[] {
+                    new SqlParameter("",SqlParameter.parameterDirections.OUT, OracleTypes.CURSOR),
+            };
+            ResultSet resultSet = dbConnection.executeProcedure("SELECT_COMBO_STUDENTS", parameters);
+
+            while (resultSet.next()) {
+                String studentName = resultSet.getString("student_name");
+                int studentId = resultSet.getInt("student_id");
+
+                ComboItem comboItem = new ComboItem(studentId, studentName);
+                studentComboBox.addItem(comboItem);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+    }
+
+    private void initialiseTeachers() {
+        try {
+            SqlParameter[] parameters = new SqlParameter[] {
+                    new SqlParameter("",SqlParameter.parameterDirections.OUT, OracleTypes.CURSOR),
+            };
+            ResultSet resultSet = dbConnection.executeProcedure("SELECT_COMBO_TEACHERS", parameters);
+
+            while (resultSet.next()) {
+                String studentName = resultSet.getString("teacher_name");
+                int studentId = resultSet.getInt("teacher_id");
+
+                ComboItem comboItem = new ComboItem(studentId, studentName);
+                teacherComboBox.addItem(comboItem);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+    }
+
+    private void initialiseSubjects() {
+        try {
+            SqlParameter[] parameters = new SqlParameter[] {
+                    new SqlParameter("",SqlParameter.parameterDirections.OUT, OracleTypes.CURSOR),
+            };
+            ResultSet resultSet = dbConnection.executeProcedure("SELECT_COMBO_SUBJECTS", parameters);
+
+            while (resultSet.next()) {
+                String studentName = resultSet.getString("subject_name");
+                int studentId = resultSet.getInt("subject_id");
+
+                ComboItem comboItem = new ComboItem(studentId, studentName);
+                subjectComboBox.addItem(comboItem);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+    }
+
+    private void initialiseMarks() {
+        String[] marks = {"2", "3", "4", "5"};
+
+        markComboBox.setModel(new DefaultComboBoxModel(marks));
     }
 }
