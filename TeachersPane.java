@@ -13,22 +13,26 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Vector;
 
-public class GroupsPane {
-    private JSplitPane groupSplitPane;
+public class TeachersPane {
     private JTable dbTable;
-    private JPanel textFieldsPanel;
-    private JPanel buttonsPanel;
     private JButton updateButton;
     private JButton deleteButton;
     private JButton createButton;
-    private JLabel yearLabel;
-    private JTextField nameTextField;
-    private JTextField yearTextField;
-    private JLabel nameLabel;
-    private JPanel groupPanel;
 
-    private static final String GROUP_NUMBER = "Номер группы";
-    private static final String GROUP_YEAR = "Год выпуска";
+    private JPanel teacherPanel;
+    private JSplitPane teacherSplitPane;
+    private JLabel patherNameLabel;
+    private JTextField patherNameTextField;
+    private JLabel firstNameLabel;
+    private JTextField lastNameTextField;
+    private JTextField firstNameTextField;
+    private JLabel lastNameLabel;
+    private JPanel buttonsPanel;
+    private JPanel textFieldsPanel;
+
+    private static final String FIRST_NAME_TEXT = "Имя";
+    private static final String LAST_NAME_TEXT = "Фамилия";
+    private static final String PATHER_NAME_TEXT = "Отчество";
 
     private static final String CREATE_BUTTON_TEXT = "Создать";
     private static final String UPDATE_BUTTON_TEXT = "Обновить";
@@ -38,10 +42,10 @@ public class GroupsPane {
 
     private int currentRowId = 0;
 
-    public GroupsPane() {
-
-        nameLabel.setText(GROUP_NUMBER);
-        yearLabel.setText(GROUP_YEAR);
+    public TeachersPane() {
+        lastNameLabel.setText(LAST_NAME_TEXT);
+        firstNameLabel.setText(FIRST_NAME_TEXT);
+        patherNameLabel.setText(PATHER_NAME_TEXT);
 
         createButton.setText(CREATE_BUTTON_TEXT);
         updateButton.setText(UPDATE_BUTTON_TEXT);
@@ -55,9 +59,9 @@ public class GroupsPane {
             e.printStackTrace();
         }
 
-        createButton.addActionListener(new GroupsPane.CreateButtonClicked());
-        updateButton.addActionListener(new GroupsPane.UpdateButtonClicked());
-        deleteButton.addActionListener(new GroupsPane.DeleteButtonClicked());
+        createButton.addActionListener(new TeachersPane.CreateButtonClicked());
+        updateButton.addActionListener(new TeachersPane.UpdateButtonClicked());
+        deleteButton.addActionListener(new TeachersPane.DeleteButtonClicked());
 
         dbTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -74,13 +78,14 @@ public class GroupsPane {
                 };
 
                 try {
-                    ResultSet resultSet = dbConnection.executeProcedure("SELECT_GROUP", parameters);
+                    ResultSet resultSet = dbConnection.executeProcedure("SELECT_TEACHER", parameters);
 
                     while(resultSet.next()) {
-                        nameTextField.setText(resultSet.getString("group_name"));
-                        yearTextField.setText(resultSet.getString("group_year"));
+                        firstNameTextField.setText(resultSet.getString("first_name"));
+                        lastNameTextField.setText(resultSet.getString("last_name"));
+                        patherNameTextField.setText(resultSet.getString("pather_name"));
 
-                        currentRowId = resultSet.getInt("group_id");
+                        currentRowId = resultSet.getInt("people_id");
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -91,7 +96,7 @@ public class GroupsPane {
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("DeanOffice");
-        frame.setContentPane(new GroupsPane().groupPanel);
+        frame.setContentPane(new TeachersPane().teacherPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         System.out.println("packed frame");
@@ -123,7 +128,7 @@ public class GroupsPane {
                 new SqlParameter("",SqlParameter.parameterDirections.OUT, OracleTypes.CURSOR),
         };
 
-        ResultSet resultSet = dbConnection.executeProcedure("SELECT_GROUPS", parameters);
+        ResultSet resultSet = dbConnection.executeProcedure("SELECT_TEACHERS", parameters);
         DefaultTableModel tableModel = buildTableModel(resultSet);
         dbTable.setModel(tableModel);
     }
@@ -131,14 +136,14 @@ public class GroupsPane {
     private class CreateButtonClicked implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String concatenatedName = getConcatenatedGroupName();
-
             SqlParameter[] parameters = new SqlParameter[] {
-                    new SqlParameter(concatenatedName, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
+                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
             };
 
             try {
-                dbConnection.executeProcedure("INSERT_GROUP", parameters);
+                dbConnection.executeProcedure("INSERT_TEACHER", parameters);
                 populateTable();
             } catch (SQLException e1) {
                 e1.printStackTrace();
@@ -149,16 +154,15 @@ public class GroupsPane {
     private class UpdateButtonClicked implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String concatenatedName = getConcatenatedGroupName();
-
-
             SqlParameter[] parameters = new SqlParameter[] {
                     new SqlParameter(Integer.toString(currentRowId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-                    new SqlParameter(concatenatedName, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
             };
 
             try {
-                dbConnection.executeProcedure("UPDATE_GROUP", parameters);
+                dbConnection.executeProcedure("UPDATE_TEACHER", parameters);
                 populateTable();
             } catch (SQLException e1) {
                 e1.printStackTrace();
@@ -174,18 +178,11 @@ public class GroupsPane {
             };
 
             try {
-                dbConnection.executeProcedure("DELETE_GROUP", parameters);
+                dbConnection.executeProcedure("DELETE_TEACHER", parameters);
                 populateTable();
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
         }
-    }
-
-    private String getConcatenatedGroupName() {
-        String groupName = nameTextField.getText();
-        String groupYear = yearTextField.getText();
-
-        return(groupName+"_"+groupYear);
     }
 }

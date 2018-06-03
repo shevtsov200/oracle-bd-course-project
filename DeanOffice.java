@@ -9,10 +9,14 @@ class DeanOffice {
     private JPanel panel1;
     private JPanel databasePane;
     private JPanel groupsPane;
+    private JPanel teacherPanel;
 
     private static final Map<Integer, String> PANE_TITLES = new HashMap<Integer, String>() {{
         put(0, "Студенты");
         put(1, "Группы");
+        put(2,"Преподаватели");
+        put(3, "Предметы");
+        put(4, "Оценки");
     }};
 
     public DeanOffice() {
