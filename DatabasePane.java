@@ -65,10 +65,6 @@ public class DatabasePane extends JSplitPane {
         updateStudentButton.setText(UPDATE_BUTTON_TEXT);
         deleteStudentButton.setText(DELETE_BUTTON_TEXT);
 
-        /*for (int i = 0; i < addStudentPane.getTabCount(); ++i) {
-            addStudentPane.setTitleAt(i, PANE_TITLES.get(i));
-        }*/
-
         dbConnection = new DatabaseConnection();
 
         groupComboBox.removeAllItems();
@@ -99,7 +95,6 @@ public class DatabasePane extends JSplitPane {
                 };
 
                 try {
-
                     ResultSet resultSet = dbConnection.executeProcedure("SELECT_STUDENT", parameters);
 
                     while(resultSet.next()) {
@@ -114,7 +109,6 @@ public class DatabasePane extends JSplitPane {
 
                         currentRowId = resultSet.getInt("people_id");
                     }
-
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -129,37 +123,6 @@ public class DatabasePane extends JSplitPane {
         frame.pack();
         System.out.println("packed frame");
         frame.setVisible(true);
-    }
-
-    private void initialiseGroups() {
-        final String GROUP_NAME_COLUMN = "GROUP_NAME";
-        final String GROUP_ID_COLUMN = "GROUP_ID";
-
-        Connection connection = dbConnection.getConnection();
-
-        try {
-            CallableStatement cs = connection.prepareCall("{ call ? := SELECT_GROUPS }");
-            cs.registerOutParameter(1, OracleTypes.CURSOR);
-            cs.execute();
-
-            ResultSet resultSet = (ResultSet)cs.getObject(1);
-
-            while (resultSet.next()) {
-                String groupName = resultSet.getString(GROUP_NAME_COLUMN);
-                int groupId = resultSet.getInt(GROUP_ID_COLUMN);
-                System.out.println(groupName + " " + groupId);
-                ComboItem comboItem = new ComboItem(groupId, groupName);
-                groupComboBox.addItem(comboItem);
-            }
-        } catch (Exception e) {
-            System.out.println("Exception: " + e);
-        } finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private DefaultTableModel buildTableModel(ResultSet resultSet) throws SQLException {
@@ -180,6 +143,25 @@ public class DatabasePane extends JSplitPane {
             data.add(vector);
         }
         return new DefaultTableModel(data, columnNames);
+    }
+
+    private void initialiseGroups() {
+        try {
+            SqlParameter[] parameters = new SqlParameter[] {
+                    new SqlParameter("",SqlParameter.parameterDirections.OUT, OracleTypes.CURSOR),
+            };
+            ResultSet resultSet = dbConnection.executeProcedure("SELECT_GROUPS", parameters);
+
+            while (resultSet.next()) {
+                String groupName = resultSet.getString("group_name");
+                int groupId = resultSet.getInt("group_id");
+
+                ComboItem comboItem = new ComboItem(groupId, groupName);
+                groupComboBox.addItem(comboItem);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
     }
 
     private void populateTable() throws SQLException {
