@@ -1,0 +1,1186 @@
+--------------------------------------------------------
+--  File created - Sunday-June-03-2018   
+--------------------------------------------------------
+--------------------------------------------------------
+--  DDL for Sequence GROUPS_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SHEVTSOV200"."GROUPS_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 62 CACHE 20 NOORDER  NOCYCLE ;
+--------------------------------------------------------
+--  DDL for Sequence MARKS_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SHEVTSOV200"."MARKS_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 33 CACHE 20 NOORDER  NOCYCLE ;
+--------------------------------------------------------
+--  DDL for Sequence MARKS_SEQ1
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SHEVTSOV200"."MARKS_SEQ1"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 2 CACHE 20 NOORDER  NOCYCLE ;
+--------------------------------------------------------
+--  DDL for Sequence PEOPLE_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SHEVTSOV200"."PEOPLE_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 71 CACHE 20 NOORDER  NOCYCLE ;
+--------------------------------------------------------
+--  DDL for Sequence SUBJECTS_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SHEVTSOV200"."SUBJECTS_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 7 CACHE 20 NOORDER  NOCYCLE ;
+--------------------------------------------------------
+--  DDL for Table GROUPS
+--------------------------------------------------------
+
+  CREATE TABLE "SHEVTSOV200"."GROUPS" 
+   (	"GROUP_ID" NUMBER, 
+	"GROUP_NAME" VARCHAR2(50 BYTE)
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Table MARKS
+--------------------------------------------------------
+
+  CREATE TABLE "SHEVTSOV200"."MARKS" 
+   (	"ID" NUMBER, 
+	"STUDENT_ID" NUMBER, 
+	"SUBJECT_ID" NUMBER, 
+	"TEACHER_ID" NUMBER, 
+	"MARK_VALUE" NUMBER, 
+	"MARK_DATE" DATE
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Table PEOPLE
+--------------------------------------------------------
+
+  CREATE TABLE "SHEVTSOV200"."PEOPLE" 
+   (	"PEOPLE_ID" NUMBER, 
+	"FIRST_NAME" VARCHAR2(20 BYTE), 
+	"LAST_NAME" VARCHAR2(20 BYTE), 
+	"PATHER_NAME" VARCHAR2(20 BYTE), 
+	"GROUP_ID" NUMBER, 
+	"PEOPLE_TYPE" CHAR(1 BYTE)
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Table SUBJECTS
+--------------------------------------------------------
+
+  CREATE TABLE "SHEVTSOV200"."SUBJECTS" 
+   (	"SUBJECT_ID" NUMBER, 
+	"SUBJECT_NAME" VARCHAR2(80 BYTE)
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for View TEACHER_MARKS
+--------------------------------------------------------
+
+  CREATE OR REPLACE FORCE VIEW "SHEVTSOV200"."TEACHER_MARKS" ("SUBJECT ID", "SUBJECT NAME", "TEACHER ID", "LAST NAME", "FIRST NAME", "PATHER NAME", "AVERAGE MARK") AS 
+  SELECT m.SUBJECT_ID AS "SUBJECT ID",
+        s.SUBJECT_NAME AS "SUBJECT NAME",
+        m.TEACHER_ID AS "TEACHER ID", 
+        p.LAST_NAME AS "LAST NAME",
+        p.FIRST_NAME AS "FIRST NAME",
+        p.PATHER_NAME AS "PATHER NAME",        
+        AVG(m.MARK_VALUE) as "AVERAGE MARK"
+    FROM PEOPLE p
+    JOIN MARKS m ON m.TEACHER_ID = p.PEOPLE_ID
+    JOIN SUBJECTS s ON s.SUBJECT_ID = m.SUBJECT_ID
+    GROUP BY m.TEACHER_ID, m.SUBJECT_ID, s.SUBJECT_NAME, p.LAST_NAME, p.FIRST_NAME, p.PATHER_NAME
+;
+--------------------------------------------------------
+--  DDL for View YEAR_MARKS
+--------------------------------------------------------
+
+  CREATE OR REPLACE FORCE VIEW "SHEVTSOV200"."YEAR_MARKS" ("GRADUATION YEAR", "AVERAGE MARK") AS 
+  SELECT GET_GROUP_YEAR(g.GROUP_NAME) AS "GRADUATION YEAR", AVG(m.MARK_VALUE) AS "AVERAGE MARK"
+    FROM MARKS m
+    JOIN PEOPLE p ON p.PEOPLE_ID = m.STUDENT_ID
+    JOIN GROUPS g ON g.GROUP_ID = p.GROUP_ID
+    GROUP BY GET_GROUP_YEAR(g.GROUP_NAME)
+;
+REM INSERTING into SHEVTSOV200.GROUPS
+SET DEFINE OFF;
+Insert into SHEVTSOV200.GROUPS (GROUP_ID,GROUP_NAME) values (1,'33504/4_2015');
+Insert into SHEVTSOV200.GROUPS (GROUP_ID,GROUP_NAME) values (40,'13504/2_2017');
+Insert into SHEVTSOV200.GROUPS (GROUP_ID,GROUP_NAME) values (41,'testt_2018');
+Insert into SHEVTSOV200.GROUPS (GROUP_ID,GROUP_NAME) values (4,'23504/1_2012');
+Insert into SHEVTSOV200.GROUPS (GROUP_ID,GROUP_NAME) values (5,'23504/2_2012');
+Insert into SHEVTSOV200.GROUPS (GROUP_ID,GROUP_NAME) values (6,'13504/4_2016');
+Insert into SHEVTSOV200.GROUPS (GROUP_ID,GROUP_NAME) values (22,'23504/3_2012');
+REM INSERTING into SHEVTSOV200.MARKS
+SET DEFINE OFF;
+Insert into SHEVTSOV200.MARKS (ID,STUDENT_ID,SUBJECT_ID,TEACHER_ID,MARK_VALUE,MARK_DATE) values (1,5,1,1,3,to_date('30-APR-18','DD-MON-RR'));
+Insert into SHEVTSOV200.MARKS (ID,STUDENT_ID,SUBJECT_ID,TEACHER_ID,MARK_VALUE,MARK_DATE) values (3,5,3,1,5,to_date('04-APR-17','DD-MON-RR'));
+Insert into SHEVTSOV200.MARKS (ID,STUDENT_ID,SUBJECT_ID,TEACHER_ID,MARK_VALUE,MARK_DATE) values (5,7,3,31,5,to_date('01-APR-16','DD-MON-RR'));
+Insert into SHEVTSOV200.MARKS (ID,STUDENT_ID,SUBJECT_ID,TEACHER_ID,MARK_VALUE,MARK_DATE) values (6,8,3,1,5,to_date('25-APR-16','DD-MON-RR'));
+Insert into SHEVTSOV200.MARKS (ID,STUDENT_ID,SUBJECT_ID,TEACHER_ID,MARK_VALUE,MARK_DATE) values (7,8,4,1,5,to_date('14-APR-17','DD-MON-RR'));
+Insert into SHEVTSOV200.MARKS (ID,STUDENT_ID,SUBJECT_ID,TEACHER_ID,MARK_VALUE,MARK_DATE) values (8,8,4,31,3,to_date('15-APR-15','DD-MON-RR'));
+Insert into SHEVTSOV200.MARKS (ID,STUDENT_ID,SUBJECT_ID,TEACHER_ID,MARK_VALUE,MARK_DATE) values (30,5,6,1,3,to_date('01-MAY-18','DD-MON-RR'));
+Insert into SHEVTSOV200.MARKS (ID,STUDENT_ID,SUBJECT_ID,TEACHER_ID,MARK_VALUE,MARK_DATE) values (27,7,4,1,4,to_date('30-APR-15','DD-MON-RR'));
+REM INSERTING into SHEVTSOV200.PEOPLE
+SET DEFINE OFF;
+Insert into SHEVTSOV200.PEOPLE (PEOPLE_ID,FIRST_NAME,LAST_NAME,PATHER_NAME,GROUP_ID,PEOPLE_TYPE) values (1,'Donald','Knuth','Ervin',null,'T');
+Insert into SHEVTSOV200.PEOPLE (PEOPLE_ID,FIRST_NAME,LAST_NAME,PATHER_NAME,GROUP_ID,PEOPLE_TYPE) values (5,'Test','Testov','Testovich',1,'S');
+Insert into SHEVTSOV200.PEOPLE (PEOPLE_ID,FIRST_NAME,LAST_NAME,PATHER_NAME,GROUP_ID,PEOPLE_TYPE) values (55,'Бобик','Барбоскин','Бобикович',4,'S');
+Insert into SHEVTSOV200.PEOPLE (PEOPLE_ID,FIRST_NAME,LAST_NAME,PATHER_NAME,GROUP_ID,PEOPLE_TYPE) values (7,'Petya','Pupkin','Vasilyevich',5,'S');
+Insert into SHEVTSOV200.PEOPLE (PEOPLE_ID,FIRST_NAME,LAST_NAME,PATHER_NAME,GROUP_ID,PEOPLE_TYPE) values (8,'Maxim','Sidorov','Sergeevich',6,'S');
+Insert into SHEVTSOV200.PEOPLE (PEOPLE_ID,FIRST_NAME,LAST_NAME,PATHER_NAME,GROUP_ID,PEOPLE_TYPE) values (50,'Даниил','Шевцов','Юрьевич',1,'S');
+Insert into SHEVTSOV200.PEOPLE (PEOPLE_ID,FIRST_NAME,LAST_NAME,PATHER_NAME,GROUP_ID,PEOPLE_TYPE) values (31,'Igor','Vereninov','Adnreevich',null,'T');
+Insert into SHEVTSOV200.PEOPLE (PEOPLE_ID,FIRST_NAME,LAST_NAME,PATHER_NAME,GROUP_ID,PEOPLE_TYPE) values (48,'Сергей','Бобров','Сергеевич',41,'S');
+REM INSERTING into SHEVTSOV200.SUBJECTS
+SET DEFINE OFF;
+Insert into SHEVTSOV200.SUBJECTS (SUBJECT_ID,SUBJECT_NAME) values (3,'Базы Данных');
+Insert into SHEVTSOV200.SUBJECTS (SUBJECT_ID,SUBJECT_NAME) values (1,'Высшая Математика');
+Insert into SHEVTSOV200.SUBJECTS (SUBJECT_ID,SUBJECT_NAME) values (6,'тест');
+Insert into SHEVTSOV200.SUBJECTS (SUBJECT_ID,SUBJECT_NAME) values (4,'Системы Управления Базами Данных');
+Insert into SHEVTSOV200.SUBJECTS (SUBJECT_ID,SUBJECT_NAME) values (5,'Базы Данных - Основы');
+Insert into SHEVTSOV200.SUBJECTS (SUBJECT_ID,SUBJECT_NAME) values (7,'тест22');
+REM INSERTING into SHEVTSOV200.TEACHER_MARKS
+SET DEFINE OFF;
+Insert into SHEVTSOV200.TEACHER_MARKS ("SUBJECT ID","SUBJECT NAME","TEACHER ID","LAST NAME","FIRST NAME","PATHER NAME","AVERAGE MARK") values (4,'Системы Управления Базами Данных',1,'Knuth','Donald','Ervin',4.5);
+Insert into SHEVTSOV200.TEACHER_MARKS ("SUBJECT ID","SUBJECT NAME","TEACHER ID","LAST NAME","FIRST NAME","PATHER NAME","AVERAGE MARK") values (3,'Базы Данных',1,'Knuth','Donald','Ervin',5);
+Insert into SHEVTSOV200.TEACHER_MARKS ("SUBJECT ID","SUBJECT NAME","TEACHER ID","LAST NAME","FIRST NAME","PATHER NAME","AVERAGE MARK") values (6,'тест',1,'Knuth','Donald','Ervin',3);
+Insert into SHEVTSOV200.TEACHER_MARKS ("SUBJECT ID","SUBJECT NAME","TEACHER ID","LAST NAME","FIRST NAME","PATHER NAME","AVERAGE MARK") values (1,'Высшая Математика',1,'Knuth','Donald','Ervin',3);
+Insert into SHEVTSOV200.TEACHER_MARKS ("SUBJECT ID","SUBJECT NAME","TEACHER ID","LAST NAME","FIRST NAME","PATHER NAME","AVERAGE MARK") values (4,'Системы Управления Базами Данных',31,'Vereninov','Igor','Adnreevich',3);
+Insert into SHEVTSOV200.TEACHER_MARKS ("SUBJECT ID","SUBJECT NAME","TEACHER ID","LAST NAME","FIRST NAME","PATHER NAME","AVERAGE MARK") values (3,'Базы Данных',31,'Vereninov','Igor','Adnreevich',5);
+REM INSERTING into SHEVTSOV200.YEAR_MARKS
+SET DEFINE OFF;
+Insert into SHEVTSOV200.YEAR_MARKS ("GRADUATION YEAR","AVERAGE MARK") values ('2016',4.33333333333333333333333333333333333333);
+Insert into SHEVTSOV200.YEAR_MARKS ("GRADUATION YEAR","AVERAGE MARK") values ('2015',3.66666666666666666666666666666666666667);
+Insert into SHEVTSOV200.YEAR_MARKS ("GRADUATION YEAR","AVERAGE MARK") values ('2012',4.5);
+--------------------------------------------------------
+--  DDL for Index GROUPS_PK
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SHEVTSOV200"."GROUPS_PK" ON "SHEVTSOV200"."GROUPS" ("GROUP_ID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Index MARKS_PK
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SHEVTSOV200"."MARKS_PK" ON "SHEVTSOV200"."MARKS" ("ID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Index PEOPLE_PK
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SHEVTSOV200"."PEOPLE_PK" ON "SHEVTSOV200"."PEOPLE" ("PEOPLE_ID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Index SUBJECTS_PK
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SHEVTSOV200"."SUBJECTS_PK" ON "SHEVTSOV200"."SUBJECTS" ("SUBJECT_ID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Trigger DELETE_STUDENT_MARKS
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."DELETE_STUDENT_MARKS" 
+AFTER DELETE ON PEOPLE
+FOR EACH ROW
+DECLARE
+    DELETED_STUDENT_ID PEOPLE.PEOPLE_ID%TYPE;
+BEGIN
+    DELETED_STUDENT_ID := (:OLD.PEOPLE_ID);
+
+    DELETE
+    FROM MARKS m
+    WHERE m.STUDENT_ID = DELETED_STUDENT_ID;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."DELETE_STUDENT_MARKS" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger DELETE_STUDENT_MARKS_TRIGGER
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."DELETE_STUDENT_MARKS_TRIGGER" 
+BEFORE DELETE ON PEOPLE
+--REFERENCING OLD AS oldRow
+FOR EACH ROW
+DECLARE
+    DELETED_STUDENT_ID PEOPLE.PEOPLE_ID%TYPE;
+BEGIN
+    --DELETE FROM MARKS m
+    --WHERE m.STUDENT_ID = :oldRow.PEOPLE_ID;
+    DELETED_STUDENT_ID := (:OLD.PEOPLE_ID);
+
+    DELETE
+    FROM MARKS m
+    WHERE m.STUDENT_ID = DELETED_STUDENT_ID;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."DELETE_STUDENT_MARKS_TRIGGER" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger EXISTING_GROUP_TRIGGER
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."EXISTING_GROUP_TRIGGER" 
+BEFORE INSERT ON GROUPS
+FOR EACH ROW
+DECLARE
+    NEW_GROUP_NAME GROUPS.GROUP_NAME%TYPE;
+    RESULT_COUNT NUMBER;
+BEGIN
+    NEW_GROUP_NAME := GET_GROUP_NAME((:NEW.GROUP_NAME));
+
+    SELECT COUNT(GET_GROUP_NAME(g.GROUP_NAME))
+    INTO RESULT_COUNT
+    FROM GROUPS g
+    WHERE GET_GROUP_NAME(g.GROUP_NAME) = NEW_GROUP_NAME;
+
+    IF RESULT_COUNT <> 0
+    THEN
+        RAISE_APPLICATION_ERROR(-20000, 'A group with name '||NEW_GROUP_NAME||' already exists.');
+    END IF;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."EXISTING_GROUP_TRIGGER" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger GROUPS_TRG
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."GROUPS_TRG" 
+BEFORE INSERT ON GROUPS 
+FOR EACH ROW 
+BEGIN
+  <<COLUMN_SEQUENCES>>
+  BEGIN
+    IF INSERTING AND :NEW.GROUP_ID IS NULL THEN
+      SELECT GROUPS_SEQ.NEXTVAL INTO :NEW.GROUP_ID FROM SYS.DUAL;
+    END IF;
+  END COLUMN_SEQUENCES;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."GROUPS_TRG" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger MARKS_TRG
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."MARKS_TRG" 
+BEFORE INSERT ON MARKS 
+FOR EACH ROW 
+BEGIN
+  <<COLUMN_SEQUENCES>>
+  BEGIN
+    IF INSERTING AND :NEW.ID IS NULL THEN
+      SELECT MARKS_SEQ.NEXTVAL INTO :NEW.ID FROM SYS.DUAL;
+    END IF;
+  END COLUMN_SEQUENCES;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."MARKS_TRG" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger MARKS_TRG1
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."MARKS_TRG1" 
+BEFORE INSERT ON MARKS 
+FOR EACH ROW 
+BEGIN
+  <<COLUMN_SEQUENCES>>
+  BEGIN
+    NULL;
+  END COLUMN_SEQUENCES;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."MARKS_TRG1" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger MARK_INTERVAL_TRIGGER
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."MARK_INTERVAL_TRIGGER" 
+BEFORE INSERT ON MARKS
+FOR EACH ROW
+DECLARE
+    NEW_MARK MARKS.MARK_VALUE%TYPE;
+    MIN_MARK_VALUE NUMBER := 2;
+    MAX_MARK_VALUE NUMBER := 5;   
+BEGIN
+    NEW_MARK := (:NEW.MARK_VALUE);
+
+    IF NEW_MARK < MIN_MARK_VALUE OR
+        NEW_MARK > MAX_MARK_VALUE
+    THEN
+        RAISE_APPLICATION_ERROR(-20000, 'Mark value must be in interval:('||MIN_MARK_VALUE||':'||MAX_MARK_VALUE||')');
+    END IF;
+END;
+
+-- 2. Создать триггер, который не позволяет добавить группу с уже существующим наименованием.
+CREATE OR REPLACE TRIGGER EXISTING_GROUP_TRIGGER
+BEFORE INSERT ON GROUPS
+FOR EACH ROW
+DECLARE
+    NEW_GROUP_NAME GROUPS.GROUP_NAME%TYPE;
+    RESULT_COUNT NUMBER;
+BEGIN
+    NEW_GROUP_NAME := GET_GROUP_NAME((:NEW.GROUP_NAME));
+
+    SELECT COUNT(GET_GROUP_NAME(g.GROUP_NAME))
+    INTO RESULT_COUNT`
+    FROM GROUPS g
+    WHERE GET_GROUP_NAME(g.GROUP_NAME) = NEW_GROUP_NAME;
+
+    IF RESULT_COUNT <> 0
+    THEN
+        RAISE_APPLICATION_ERROR(-20000, 'A group with name '||NEW_GROUP_NAME||' already exists.');
+    END IF;
+END;
+
+-- 3. Создать триггер, который не позволяет добавить человека с типом отличным от («T», «S»).
+CREATE OR REPLACE TRIGGER PEOPLE_TYPE_TRIGGER
+BEFORE INSERT ON PEOPLE
+FOR EACH ROW
+DECLARE
+    NEW_PEOPLE_TYPE PEOPLE.PEOPLE_TYPE%TYPE;
+    STUDENT_TYPE_CHAR PEOPLE.PEOPLE_TYPE%TYPE := 'S';
+    TEACHER_TYPE_CHAR PEOPLE.PEOPLE_TYPE%TYPE := 'T';
+BEGIN
+    NEW_PEOPLE_TYPE := (:NEW.PEOPLE_TYPE);
+
+    IF NEW_PEOPLE_TYPE <> STUDENT_TYPE_CHAR AND
+        NEW_PEOPLE_TYPE <> TEACHER_TYPE_CHAR
+    THEN
+        RAISE_APPLICATION_ERROR(-20000, 'People type '||NEW_PEOPLE_TYPE||' is not recognized.');
+    END IF;
+END;
+
+-- Триггеры на модификацию
+-- 1. Создать триггер, который не позволяет изменить наименование предмета, если на него есть ссылки
+CREATE OR REPLACE TRIGGER REFERENCED_SUBJECT_TRIGGER
+BEFORE UPDATE ON SUBJECTS
+FOR EACH ROW
+DECLARE
+MODIFIED_SUBJECT_ID INTEGER;
+RESULT_COUNT INTEGER;
+BEGIN
+    IF (:NEW.SUBJECT_NAME) <> (:OLD.SUBJECT_NAME)
+    THEN  
+        MODIFIED_SUBJECT_ID := (:NEW.SUBJECT_ID);
+
+        SELECT COUNT(m.SUBJECT_ID)
+        INTO RESULT_COUNT
+        FROM MARKS m
+        WHERE m.SUBJECT_ID = MODIFIED_SUBJECT_ID;
+
+        IF RESULT_COUNT <> 0
+        THEN
+            RAISE_APPLICATION_ERROR(-20000, 'Unable to change name of subject, it is referenced in MARKS table.');
+        END IF;
+    END IF;
+END;
+
+-- 2. Создать триггер, который не позволяет изменить наименование группы, студенты которой получили хотя бы одну оценку
+CREATE OR REPLACE TRIGGER REFERENCED_GROUP_TRIGGER
+BEFORE UPDATE ON GROUPS
+FOR EACH ROW
+DECLARE
+MODIFIED_GROUP_ID INTEGER;
+RESULT_COUNT INTEGER;
+BEGIN
+    IF (:NEW.GROUP_NAME) <> (:OLD.GROUP_NAME)
+    THEN  
+        MODIFIED_GROUP_ID := (:NEW.GROUP_ID);
+
+        SELECT COUNT(g.GROUP_ID)
+        INTO RESULT_COUNT
+        FROM MARKS m
+        JOIN PEOPLE p ON p.PEOPLE_ID = m.STUDENT_ID
+        JOIN GROUPS g ON g.GROUP_ID = p.GROUP_ID
+        WHERE g.GROUP_ID = MODIFIED_GROUP_ID;
+
+        IF RESULT_COUNT <> 0
+        THEN
+            RAISE_APPLICATION_ERROR(-20000, 'Unable to change name of group, it is referenced in MARKS table.');
+        END IF;
+    END IF;
+END;
+
+-- 3. Создать триггер, который не позволяет изменить преподавателя у уже выставленной оценки.
+CREATE OR REPLACE TRIGGER MARK_TEACHER_TRIGGER
+BEFORE UPDATE ON MARKS
+FOR EACH ROW
+BEGIN
+    IF (:NEW.TEACHER_ID) <> (:OLD.TEACHER_ID)
+    THEN  
+        RAISE_APPLICATION_ERROR(-20000, 'Unable to change teacher, the mark is already set.');
+    END IF;
+END;
+
+-- Тригерры на удаление
+-- 1. Создать триггер, который при удалении студента удаляет все оценки, полученные им.
+--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+CREATE OR REPLACE TRIGGER DELETE_STUDENT_MARKS_TRIGGER
+BEFORE DELETE ON PEOPLE
+FOR EACH ROW
+DECLARE
+    DELETED_STUDENT_ID PEOPLE.PEOPLE_ID%TYPE;
+BEGIN
+    DELETED_STUDENT_ID := (:OLD.PEOPLE_ID);
+
+    DELETE
+    FROM MARKS m
+    WHERE m.STUDENT_ID = DELETED_STUDENT_ID;
+END;
+
+-- 2. Создать триггер, который при удалении группы, переводит всех студентов в группу «удаленные».
+CREATE OR REPLACE TRIGGER STUDENTS_TO_DELETED_TRIGGER
+AFTER DELETE ON GROUPS
+FOR EACH ROW
+DECLARE
+    DELETED_GROUP_NAME VARCHAR;
+    DELETED_GROUP_ID INTEGER;
+    OLD_GROUP_ID INTEGER;
+BEGIN
+    OLD_GROUP_ID := :OLD.GROUP_ID;
+
+
+    INSERT INTO GROUPS
+    (GROUP_NAME)
+    SELECT DELETED_GROUP_NAME
+    FROM DUAL
+    WHERE NOT EXISTS (
+        SELECT *
+        FROM GROUPS
+        WHERE GROUP_NAME = DELETED_GROUP_NAME
+    );
+
+    SELECT GROUP_ID
+    INTO DELETED_GROUP_ID
+    FROM GROUPS
+    WHERE GROUP_NAME = DELETED_GROUP_NAME;
+
+
+    UPDATE PEOPLE p
+    SET p.GROUP_ID = DELETED_GROUP_ID
+    WHERE p.GROUP_ID = OLD_GROUP_ID;
+END;
+
+-- 3. Создать триггер, который при удалении предмета, если на него существуют ссылки – откатывает транзакцию.
+CREATE OR REPLACE TRIGGER SUBJECT_ROLLBACK_TRIGGER
+AFTER DELETE ON SUBJECTS
+FOR EACH ROW
+DECLARE
+    RESULT_COUNT INTEGER;
+    DELETED_SUBJECT_ID INTEGER;
+BEGIN
+
+    DELETED_SUBJECT_ID := :OLD.SUBJECT_ID;
+
+    SELECT COUNT(m.SUBJECT_ID)
+    INTO RESULT_COUNT
+    FROM MARKS m
+    WHERE m.SUBJECT_ID = DELETED_SUBJECT_ID;
+
+    IF RESULT_COUNT <> 0
+    THEN
+        ROLLBACK;
+    END IF;
+END;
+
+/
+ALTER TRIGGER "SHEVTSOV200"."MARK_INTERVAL_TRIGGER" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger MARK_TEACHER_TRIGGER
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."MARK_TEACHER_TRIGGER" 
+BEFORE UPDATE ON MARKS
+FOR EACH ROW
+BEGIN
+    IF (:NEW.TEACHER_ID) <> (:OLD.TEACHER_ID)
+    THEN  
+        RAISE_APPLICATION_ERROR(-20000, 'Unable to change teacher, the mark is already set.');
+    END IF;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."MARK_TEACHER_TRIGGER" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger PEOPLE_TRG
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."PEOPLE_TRG" 
+BEFORE INSERT ON PEOPLE 
+FOR EACH ROW 
+BEGIN
+  <<COLUMN_SEQUENCES>>
+  BEGIN
+    IF INSERTING AND :NEW.PEOPLE_ID IS NULL THEN
+      SELECT PEOPLE_SEQ.NEXTVAL INTO :NEW.PEOPLE_ID FROM SYS.DUAL;
+    END IF;
+  END COLUMN_SEQUENCES;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."PEOPLE_TRG" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger PEOPLE_TYPE_TRIGGER
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."PEOPLE_TYPE_TRIGGER" 
+BEFORE INSERT ON PEOPLE
+FOR EACH ROW
+DECLARE
+    NEW_PEOPLE_TYPE PEOPLE.PEOPLE_TYPE%TYPE;
+    STUDENT_TYPE_CHAR PEOPLE.PEOPLE_TYPE%TYPE := 'S';
+    TEACHER_TYPE_CHAR PEOPLE.PEOPLE_TYPE%TYPE := 'T';
+BEGIN
+    NEW_PEOPLE_TYPE := (:NEW.PEOPLE_TYPE);
+
+    IF NEW_PEOPLE_TYPE <> STUDENT_TYPE_CHAR AND
+        NEW_PEOPLE_TYPE <> TEACHER_TYPE_CHAR
+    THEN
+        RAISE_APPLICATION_ERROR(-20000, 'People type '||NEW_PEOPLE_TYPE||' is not recognized.');
+    END IF;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."PEOPLE_TYPE_TRIGGER" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger REFERENCED_GROUP_TRIGGER
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."REFERENCED_GROUP_TRIGGER" 
+BEFORE UPDATE ON GROUPS
+FOR EACH ROW
+DECLARE
+MODIFIED_GROUP_ID INTEGER;
+RESULT_COUNT INTEGER;
+BEGIN
+    IF (:NEW.GROUP_NAME) <> (:OLD.GROUP_NAME)
+    THEN  
+        MODIFIED_GROUP_ID := (:NEW.GROUP_ID);
+
+        --SELECT COUNT(g.GROUP_ID)
+        SELECT COUNT(p.GROUP_ID)
+        INTO RESULT_COUNT
+        FROM MARKS m
+        JOIN PEOPLE p ON p.PEOPLE_ID = m.STUDENT_ID
+        --JOIN GROUPS g ON g.GROUP_ID = p.GROUP_ID
+        --WHERE g.GROUP_ID = MODIFIED_GROUP_ID;
+        WHERE p.GROUP_ID = MODIFIED_GROUP_ID;
+
+        IF RESULT_COUNT <> 0
+        THEN
+            RAISE_APPLICATION_ERROR(-20000, 'Unable to change name of group, it is referenced in MARKS table.');
+        END IF;
+    END IF;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."REFERENCED_GROUP_TRIGGER" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger REFERENCED_SUBJECT_TRIGGER
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."REFERENCED_SUBJECT_TRIGGER" 
+BEFORE UPDATE ON SUBJECTS
+FOR EACH ROW
+DECLARE
+MODIFIED_SUBJECT_ID INTEGER;
+RESULT_COUNT INTEGER;
+BEGIN
+    IF (:NEW.SUBJECT_NAME) <> (:OLD.SUBJECT_NAME)
+    THEN  
+        MODIFIED_SUBJECT_ID := (:NEW.SUBJECT_ID);
+
+        SELECT COUNT(m.SUBJECT_ID)
+        INTO RESULT_COUNT
+        FROM MARKS m
+        WHERE m.SUBJECT_ID = MODIFIED_SUBJECT_ID;
+
+        IF RESULT_COUNT <> 0
+        THEN
+            RAISE_APPLICATION_ERROR(-20000, 'Unable to change name of subject, it is referenced in MARKS table.');
+        END IF;
+    END IF;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."REFERENCED_SUBJECT_TRIGGER" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger SUBJECTS_TRG
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."SUBJECTS_TRG" 
+BEFORE INSERT ON SUBJECTS 
+FOR EACH ROW 
+BEGIN
+  <<COLUMN_SEQUENCES>>
+  BEGIN
+    IF INSERTING AND :NEW.SUBJECT_ID IS NULL THEN
+      SELECT SUBJECTS_SEQ.NEXTVAL INTO :NEW.SUBJECT_ID FROM SYS.DUAL;
+    END IF;
+  END COLUMN_SEQUENCES;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."SUBJECTS_TRG" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger SUBJECT_ROLLBACK_TRIGGER
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "SHEVTSOV200"."SUBJECT_ROLLBACK_TRIGGER" 
+AFTER DELETE ON SUBJECTS
+FOR EACH ROW
+DECLARE
+    RESULT_COUNT INTEGER;
+    DELETED_SUBJECT_ID INTEGER;
+BEGIN
+
+    DELETED_SUBJECT_ID := :OLD.SUBJECT_ID;
+
+    SELECT COUNT(m.SUBJECT_ID)
+    INTO RESULT_COUNT
+    FROM MARKS m
+    WHERE m.SUBJECT_ID = DELETED_SUBJECT_ID;
+
+    IF RESULT_COUNT <> 0
+    THEN
+        ROLLBACK;
+    END IF;
+END;
+/
+ALTER TRIGGER "SHEVTSOV200"."SUBJECT_ROLLBACK_TRIGGER" ENABLE;
+--------------------------------------------------------
+--  DDL for Procedure CALCULATE_PERFORMANCE
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."CALCULATE_PERFORMANCE" (
+    FROM_YEAR IN INTEGER,
+    TO_YEAR IN INTEGER
+) AS
+    OLD_AVG_MARK MARKS.MARK_VALUE%TYPE;
+    CURRENT_SUBJECT_ID INTEGER;
+    AVG_MARK_DIFFERENCE NUMBER;
+
+    NEW_SUBJECT_ID INTEGER;
+    NEW_YEAR INTEGER;
+    NEW_AVG_MARK MARKS.MARK_VALUE%TYPE;
+
+    CURSOR YEAR_MARKS_CURSOR(
+        FROM_YEAR IN INTEGER,
+        TO_YEAR IN INTEGER
+    ) IS
+        SELECT m.SUBJECT_ID, EXTRACT(YEAR FROM m.MARK_DATE) AS "YEAR",  AVG(m.MARK_VALUE)
+        FROM MARKS m
+        GROUP BY m.SUBJECT_ID , EXTRACT(YEAR FROM m.MARK_DATE)     
+        HAVING EXTRACT(YEAR FROM m.MARK_DATE) >= FROM_YEAR AND EXTRACT(YEAR FROM m.MARK_DATE) <= TO_YEAR
+        ORDER BY m.SUBJECT_ID;
+
+BEGIN
+    BEGIN 
+        OLD_AVG_MARK := 0;
+        CURRENT_SUBJECT_ID := NULL;
+        OPEN YEAR_MARKS_CURSOR(FROM_YEAR, TO_YEAR);
+        LOOP 
+            FETCH YEAR_MARKS_CURSOR INTO NEW_SUBJECT_ID, NEW_YEAR, NEW_AVG_MARK;
+            EXIT WHEN YEAR_MARKS_CURSOR%NOTFOUND;
+
+            IF CURRENT_SUBJECT_ID IS NULL
+            THEN
+                CURRENT_SUBJECT_ID := NEW_SUBJECT_ID;            
+            ELSIF NEW_SUBJECT_ID <> CURRENT_SUBJECT_ID
+            THEN
+                OLD_AVG_MARK := 0;
+                CURRENT_SUBJECT_ID := NEW_SUBJECT_ID;
+            END IF;
+
+            AVG_MARK_DIFFERENCE := NEW_AVG_MARK - OLD_AVG_MARK;
+
+
+            OLD_AVG_MARK := NEW_AVG_MARK;
+
+            dbms_output.put_line(NEW_SUBJECT_ID||' '||NEW_YEAR||' '||NEW_AVG_MARK||' '||AVG_MARK_DIFFERENCE);           
+        END LOOP;
+        CLOSE YEAR_MARKS_CURSOR;
+    END;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure DELETE_GROUP
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."DELETE_GROUP" (
+    GROUP_ID_PARAMETER INTEGER
+)
+IS
+BEGIN
+    DELETE
+    FROM GROUPS g
+    WHERE g.GROUP_ID = GROUP_ID_PARAMETER;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure DELETE_STUDENT
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."DELETE_STUDENT" (
+    STUDENT_ID_PARAMETER INTEGER
+)
+IS
+BEGIN
+    DELETE
+    FROM PEOPLE p
+    WHERE p.PEOPLE_ID = STUDENT_ID_PARAMETER;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure INSERT_GROUP
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."INSERT_GROUP" (
+    GROUP_NAME_PARAMETER VARCHAR
+)
+IS
+BEGIN
+    INSERT INTO GROUPS
+    (GROUP_NAME)
+    VALUES
+    (GROUP_NAME_PARAMETER);
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure INSERT_STUDENT
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."INSERT_STUDENT" (
+    LAST_NAME_PARAMETER VARCHAR,
+    FIRST_NAME_PARAMETER VARCHAR,   
+    PATHER_NAME_PARAMETER VARCHAR,
+    GROUP_ID_PARAMETER INTEGER
+)
+IS
+BEGIN
+    INSERT INTO PEOPLE
+    (FIRST_NAME, LAST_NAME, PATHER_NAME, GROUP_ID, PEOPLE_TYPE)
+    VALUES
+    (FIRST_NAME_PARAMETER, LAST_NAME_PARAMETER, PATHER_NAME_PARAMETER, GROUP_ID_PARAMETER,'S');
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure PRINT_GROUP_MARKS
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."PRINT_GROUP_MARKS" (
+    FROM_YEAR IN INTEGER, 
+    TO_YEAR IN INTEGER
+) AS
+BEGIN
+    FOR i IN (
+        SELECT GET_GROUP_NAME(g.GROUP_NAME) AS "GROUP", AVG(m.MARK_VALUE) AS "AVERAGE MARK"
+        FROM GROUPS g
+        JOIN PEOPLE p ON p.GROUP_ID = g.GROUP_ID
+        JOIN MARKS m ON m.STUDENT_ID = p.PEOPLE_ID
+        GROUP BY g.GROUP_NAME
+        HAVING GET_GROUP_YEAR(g.GROUP_NAME) >= FROM_YEAR AND 
+            GET_GROUP_YEAR(g.GROUP_NAME) <= TO_YEAR
+    ) LOOP
+    dbms_output.put_line(i."GROUP"||' '||i."AVERAGE MARK");
+    END LOOP;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure PRINT_YEAR_MARKS
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."PRINT_YEAR_MARKS" AS
+BEGIN
+    FOR i IN (
+        SELECT s.SUBJECT_NAME AS "SUBJECT", AVG(m.MARK_VALUE) AS "AVERAGE MARK"
+        FROM MARKS m
+        JOIN PEOPLE p ON p.PEOPLE_ID = m.STUDENT_ID
+        JOIN GROUPS g ON g.GROUP_ID = p.GROUP_ID
+        JOIN SUBJECTS s ON s.SUBJECT_ID = m.SUBJECT_ID
+        GROUP BY m.SUBJECT_ID, EXTRACT(YEAR FROM m.MARK_DATE), s.SUBJECT_NAME 
+        HAVING EXTRACT(YEAR FROM m.MARK_DATE) = 2018
+    ) LOOP
+        dbms_output.put_line(i."SUBJECT"||' '||i."AVERAGE MARK");
+    END LOOP;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure SELECT_GROUP_MARKS
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."SELECT_GROUP_MARKS" (
+    FROM_YEAR IN INTEGER, 
+    TO_YEAR IN INTEGER
+) AS
+BEGIN
+    FOR i IN (
+        SELECT GET_GROUP_NAME(g.GROUP_NAME) AS "GROUP", AVG(m.MARK_VALUE) AS "AVERAGE MARK"
+        FROM GROUPS g
+        JOIN PEOPLE p ON p.GROUP_ID = g.GROUP_ID
+        JOIN MARKS m ON m.STUDENT_ID = p.PEOPLE_ID
+        GROUP BY g.GROUP_NAME
+        HAVING GET_GROUP_YEAR(g.GROUP_NAME) >= FROM_YEAR AND 
+            GET_GROUP_YEAR(g.GROUP_NAME) <= TO_YEAR
+    ) LOOP
+    dbms_output.put_line(i."GROUP"||' '||i."AVERAGE MARK");
+    END LOOP;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure SELECT_MIN_SUBJECT_AND_MARK
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."SELECT_MIN_SUBJECT_AND_MARK" (
+    GROUP_ID_PAR IN INTEGER,
+    HARDEST_SUBJECT_ID OUT INTEGER,
+    MIN_SUBJECT_MARK OUT INTEGER
+) AS
+BEGIN
+    SELECT SUBJECT_ID 
+    INTO HARDEST_SUBJECT_ID
+    FROM (
+        SELECT m.SUBJECT_ID, AVG(m.MARK_VALUE)
+        FROM GROUPS g
+        JOIN PEOPLE p ON p.GROUP_ID = g.GROUP_ID
+        JOIN MARKS m ON m.STUDENT_ID = p.PEOPLE_ID
+        GROUP BY g.GROUP_ID, m.SUBJECT_ID
+        HAVING g.GROUP_ID = GROUP_ID_PAR
+        ORDER BY AVG(m.MARK_VALUE),m.SUBJECT_ID ASC
+    ) WHERE ROWNUM = 1;
+
+    SELECT "AVERAGE MARK"
+    INTO MIN_SUBJECT_MARK
+    FROM (
+        SELECT m.SUBJECT_ID, g.GROUP_ID, AVG(m.MARK_VALUE) as "AVERAGE MARK"
+        FROM GROUPS g
+        JOIN PEOPLE p ON p.GROUP_ID = g.GROUP_ID
+        JOIN MARKS m ON m.STUDENT_ID = p.PEOPLE_ID
+        GROUP BY g.GROUP_ID, m.SUBJECT_ID
+        HAVING m.SUBJECT_ID = HARDEST_SUBJECT_ID
+        ORDER BY AVG(m.MARK_VALUE),m.SUBJECT_ID ASC
+    ) WHERE ROWNUM = 1;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure SELECT_MIN_TEACHER_MARK
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."SELECT_MIN_TEACHER_MARK" (
+    TEACHER_ID_PAR IN INTEGER,
+    GROUP_ID_PAR OUT INTEGER
+) AS
+BEGIN
+    SELECT GROUP_ID INTO GROUP_ID_PAR
+    FROM (
+        SELECT m.TEACHER_ID, g.GROUP_ID, AVG(m.MARK_VALUE)
+        FROM GROUPS g
+        JOIN PEOPLE p ON p.GROUP_ID = g.GROUP_ID
+        JOIN MARKS m ON m.STUDENT_ID = p.PEOPLE_ID
+        GROUP BY m.TEACHER_ID, g.GROUP_ID
+        HAVING m.TEACHER_ID = TEACHER_ID_PAR
+        ORDER BY m.TEACHER_ID, AVG(m.MARK_VALUE) ASC
+    ) WHERE ROWNUM = 1;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure SELECT_TEACHER_WORST_GROUP
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."SELECT_TEACHER_WORST_GROUP" (
+    TEACHER_ID_PAR IN INTEGER,
+    GROUP_ID_PAR OUT INTEGER
+) AS
+BEGIN
+    SELECT GROUP_ID 
+    INTO GROUP_ID_PAR
+    FROM (
+        SELECT m.TEACHER_ID, g.GROUP_ID, AVG(m.MARK_VALUE)
+        FROM GROUPS g
+        JOIN PEOPLE p ON p.GROUP_ID = g.GROUP_ID
+        JOIN MARKS m ON m.STUDENT_ID = p.PEOPLE_ID
+        GROUP BY m.TEACHER_ID, g.GROUP_ID
+        HAVING m.TEACHER_ID = TEACHER_ID_PAR
+        ORDER BY m.TEACHER_ID, AVG(m.MARK_VALUE) ASC
+    ) WHERE ROWNUM = 1;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure SELECT_YEAR_MARKS
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."SELECT_YEAR_MARKS" AS
+BEGIN
+    FOR i IN (
+        SELECT s.SUBJECT_NAME AS "SUBJECT", AVG(m.MARK_VALUE) AS "AVERAGE MARK"
+        FROM MARKS m
+        JOIN PEOPLE p ON p.PEOPLE_ID = m.STUDENT_ID
+        JOIN GROUPS g ON g.GROUP_ID = p.GROUP_ID
+        JOIN SUBJECTS s ON s.SUBJECT_ID = m.SUBJECT_ID
+        GROUP BY m.SUBJECT_ID, EXTRACT(YEAR FROM m.MARK_DATE), s.SUBJECT_NAME 
+        HAVING EXTRACT(YEAR FROM m.MARK_DATE) = 2018
+    ) LOOP
+        dbms_output.put_line(i."SUBJECT"||' '||i."AVERAGE MARK");
+    END LOOP;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure UPDATE_GROUP
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."UPDATE_GROUP" (
+    GROUP_ID_PARAMETER INTEGER,
+    NAME_PARAMETER VARCHAR
+)
+IS
+BEGIN
+    UPDATE GROUPS g
+    SET g.GROUP_NAME = NAME_PARAMETER
+    WHERE g.GROUP_ID = GROUP_ID_PARAMETER;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure UPDATE_STUDENT
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "SHEVTSOV200"."UPDATE_STUDENT" (
+    STUDENT_ID_PARAMETER INTEGER,
+    LAST_NAME_PARAMETER VARCHAR,
+    FIRST_NAME_PARAMETER VARCHAR,  
+    PATHER_NAME_PARAMETER VARCHAR,
+    GROUP_ID_PARAMETER INTEGER
+)
+IS
+BEGIN
+    UPDATE PEOPLE p
+    SET p.FIRST_NAME = FIRST_NAME_PARAMETER,
+        p.LAST_NAME = LAST_NAME_PARAMETER,
+        p.PATHER_NAME = PATHER_NAME_PARAMETER,
+        p.GROUP_ID = GROUP_ID_PARAMETER
+    WHERE p.PEOPLE_ID = STUDENT_ID_PARAMETER;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Package TYPES
+--------------------------------------------------------
+
+  CREATE OR REPLACE PACKAGE "SHEVTSOV200"."TYPES" 
+AS
+    TYPE ref_cursor IS REF CURSOR;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Function GET_GROUP_NAME
+--------------------------------------------------------
+
+  CREATE OR REPLACE FUNCTION "SHEVTSOV200"."GET_GROUP_NAME" (
+    GROUP_NAME VARCHAR
+) RETURN VARCHAR IS
+BEGIN
+    RETURN(SUBSTR(GROUP_NAME, 0, INSTR(GROUP_NAME, '_')-1));
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Function GET_GROUP_YEAR
+--------------------------------------------------------
+
+  CREATE OR REPLACE FUNCTION "SHEVTSOV200"."GET_GROUP_YEAR" (
+    GROUP_NAME VARCHAR
+) RETURN VARCHAR IS
+BEGIN
+    RETURN(SUBSTR(GROUP_NAME, INSTR(GROUP_NAME, '_')+1));
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Function SELECT_GROUP
+--------------------------------------------------------
+
+  CREATE OR REPLACE FUNCTION "SHEVTSOV200"."SELECT_GROUP" (
+    GROUP_ID_PARAMETER INTEGER
+)
+RETURN types.ref_cursor
+AS
+    groups_cursor types.ref_cursor;
+BEGIN
+    OPEN groups_cursor FOR
+        SELECT g.GROUP_ID, GET_GROUP_NAME(g.GROUP_NAME) as "GROUP_NAME",
+            GET_GROUP_YEAR(g.GROUP_NAME) as "GROUP_YEAR"
+        FROM
+        GROUPS g
+        WHERE g.GROUP_ID = GROUP_ID_PARAMETER;
+    RETURN groups_cursor;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Function SELECT_GROUPS
+--------------------------------------------------------
+
+  CREATE OR REPLACE FUNCTION "SHEVTSOV200"."SELECT_GROUPS" 
+RETURN types.ref_cursor
+AS
+    groups_cursor types.ref_cursor;
+BEGIN
+    OPEN groups_cursor FOR
+        SELECT g.GROUP_ID, GET_GROUP_NAME(g.GROUP_NAME) as "GROUP_NAME",
+            GET_GROUP_YEAR(g.GROUP_NAME) as "GROUP_YEAR"
+        FROM
+        GROUPS g;
+    RETURN groups_cursor;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Function SELECT_GROUPS_ID_NAMES
+--------------------------------------------------------
+
+  CREATE OR REPLACE FUNCTION "SHEVTSOV200"."SELECT_GROUPS_ID_NAMES" 
+RETURN types.ref_cursor
+AS
+    groups_cursor types.ref_cursor;
+BEGIN
+    OPEN groups_cursor FOR
+        SELECT g.GROUP_ID as "GROUP_ID", GET_GROUP_NAME(g.GROUP_NAME) as "GROUP_NAME"
+        FROM GROUPS g;
+    RETURN groups_cursor;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Function SELECT_STUDENT
+--------------------------------------------------------
+
+  CREATE OR REPLACE FUNCTION "SHEVTSOV200"."SELECT_STUDENT" (
+    STUDENT_ID INTEGER
+)
+RETURN types.ref_cursor
+AS
+    students_cursor types.ref_cursor;
+BEGIN
+    OPEN students_cursor FOR
+        SELECT p.PEOPLE_ID, p.LAST_NAME, p.FIRST_NAME, p.PATHER_NAME, 
+        p.GROUP_ID as "GROUP_ID", GET_GROUP_NAME(g.GROUP_NAME) as "GROUP_NAME"
+        FROM PEOPLE p
+        JOIN GROUPS g ON g.GROUP_ID = p.GROUP_ID
+        WHERE p.PEOPLE_ID = STUDENT_ID;
+    RETURN students_cursor;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Function SELECT_STUDENTS
+--------------------------------------------------------
+
+  CREATE OR REPLACE FUNCTION "SHEVTSOV200"."SELECT_STUDENTS" 
+RETURN types.ref_cursor
+AS
+    students_cursor types.ref_cursor;
+BEGIN
+    OPEN students_cursor FOR
+        SELECT p.PEOPLE_ID, p.LAST_NAME, p.FIRST_NAME, p.PATHER_NAME, p.GROUP_ID
+        FROM PEOPLE p
+        WHERE p.PEOPLE_TYPE = 'S';
+    RETURN students_cursor;
+END;
+
+/
+--------------------------------------------------------
+--  Constraints for Table GROUPS
+--------------------------------------------------------
+
+  ALTER TABLE "SHEVTSOV200"."GROUPS" ADD CONSTRAINT "GROUPS_PK" PRIMARY KEY ("GROUP_ID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+  ALTER TABLE "SHEVTSOV200"."GROUPS" MODIFY ("GROUP_ID" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table MARKS
+--------------------------------------------------------
+
+  ALTER TABLE "SHEVTSOV200"."MARKS" ADD CONSTRAINT "MARKS_PK" PRIMARY KEY ("ID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+  ALTER TABLE "SHEVTSOV200"."MARKS" MODIFY ("ID" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table PEOPLE
+--------------------------------------------------------
+
+  ALTER TABLE "SHEVTSOV200"."PEOPLE" ADD CONSTRAINT "PEOPLE_PK" PRIMARY KEY ("PEOPLE_ID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+  ALTER TABLE "SHEVTSOV200"."PEOPLE" MODIFY ("PEOPLE_ID" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table SUBJECTS
+--------------------------------------------------------
+
+  ALTER TABLE "SHEVTSOV200"."SUBJECTS" ADD CONSTRAINT "SUBJECTS_PK" PRIMARY KEY ("SUBJECT_ID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+  ALTER TABLE "SHEVTSOV200"."SUBJECTS" MODIFY ("SUBJECT_ID" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Ref Constraints for Table MARKS
+--------------------------------------------------------
+
+  ALTER TABLE "SHEVTSOV200"."MARKS" ADD CONSTRAINT "STUDENT_ID_FK" FOREIGN KEY ("STUDENT_ID")
+	  REFERENCES "SHEVTSOV200"."PEOPLE" ("PEOPLE_ID") ENABLE;
+  ALTER TABLE "SHEVTSOV200"."MARKS" ADD CONSTRAINT "SUBJECT_ID_FK" FOREIGN KEY ("SUBJECT_ID")
+	  REFERENCES "SHEVTSOV200"."SUBJECTS" ("SUBJECT_ID") ENABLE;
+  ALTER TABLE "SHEVTSOV200"."MARKS" ADD CONSTRAINT "TEACHER_ID_FK" FOREIGN KEY ("TEACHER_ID")
+	  REFERENCES "SHEVTSOV200"."PEOPLE" ("PEOPLE_ID") ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table PEOPLE
+--------------------------------------------------------
+
+  ALTER TABLE "SHEVTSOV200"."PEOPLE" ADD CONSTRAINT "GROUP_ID_FK" FOREIGN KEY ("GROUP_ID")
+	  REFERENCES "SHEVTSOV200"."GROUPS" ("GROUP_ID") ENABLE;
