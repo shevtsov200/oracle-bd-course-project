@@ -1,6 +1,10 @@
 package com.project.database;
 
+import net.codejava.swing.DateLabelFormatter;
 import oracle.jdbc.OracleTypes;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.Vector;
 
 public class MarksPane {
@@ -22,9 +27,9 @@ public class MarksPane {
     private JTextField patherNameTextField;
     private JTextField lastNameTextField;
 
-    private JLabel lastNameLabel;
-    private JLabel firstNameLabel;
-    private JLabel patherNameLabel;
+    private JLabel studentLabel;
+    private JLabel subjectLabel;
+    private JLabel teacherLabel;
 
     private JButton createButton;
     private JPanel addStudentPanel;
@@ -34,6 +39,13 @@ public class MarksPane {
     private JButton updateButton;
     private JButton deleteButton;
     private JPanel teacherPanel;
+    private JComboBox studentComboBox;
+    private JComboBox subjectComboBox;
+    private JComboBox teacherComboBox;
+    private JDatePickerImpl datePicker;
+    private JLabel markLabel;
+    private JComboBox markComboBox;
+    private JLabel dateLabel;
 
     private static final String FIRST_NAME_TEXT = "Имя";
     private static final String LAST_NAME_TEXT = "Фамилия";
@@ -47,9 +59,9 @@ public class MarksPane {
 
     public MarksPane() {
 
-        lastNameLabel.setText(LAST_NAME_TEXT);
-        firstNameLabel.setText(FIRST_NAME_TEXT);
-        patherNameLabel.setText(PATHER_NAME_TEXT);
+        studentLabel.setText(LAST_NAME_TEXT);
+        subjectLabel.setText(FIRST_NAME_TEXT);
+        teacherLabel.setText(PATHER_NAME_TEXT);
 
         createButton.setText(ADD_BUTTON_TEXT);
         updateButton.setText(UPDATE_BUTTON_TEXT);
@@ -135,6 +147,17 @@ public class MarksPane {
         ResultSet resultSet = dbConnection.executeProcedure("SELECT_TEACHERS", parameters);
         DefaultTableModel tableModel = buildTableModel(resultSet);
         dbTable.setModel(tableModel);
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        UtilDateModel model = new UtilDateModel();
+        Properties properties = new Properties();
+        properties.put("test.today", "Today");
+        properties.put("text.month", "Month");
+        properties.put("text.year", "Year");
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, properties);
+        datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
     }
 
     private class CreateButtonClicked implements ActionListener {
