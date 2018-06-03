@@ -40,9 +40,6 @@ public class DatabasePane extends JSplitPane {
     private JButton deleteStudentButton;
     private JPanel databasePane;
 
-    private static final Map<Integer, String> PANE_TITLES = new HashMap<Integer, String>() {{
-        put(0, "Добавить студента");
-    }};
     private static final String FIRST_NAME_TEXT = "Имя";
     private static final String LAST_NAME_TEXT = "Фамилия";
     private static final String PATHER_NAME_TEXT = "Отчество";
@@ -150,7 +147,7 @@ public class DatabasePane extends JSplitPane {
             SqlParameter[] parameters = new SqlParameter[] {
                     new SqlParameter("",SqlParameter.parameterDirections.OUT, OracleTypes.CURSOR),
             };
-            ResultSet resultSet = dbConnection.executeProcedure("SELECT_GROUPS", parameters);
+            ResultSet resultSet = dbConnection.executeProcedure("SELECT_GROUPS_ID_NAMES", parameters);
 
             while (resultSet.next()) {
                 String groupName = resultSet.getString("group_name");

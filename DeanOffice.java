@@ -8,9 +8,11 @@ class DeanOffice {
     private JTabbedPane tabbedPane;
     private JPanel panel1;
     private JPanel databasePane;
+    private JPanel groupsPane;
 
     private static final Map<Integer, String> PANE_TITLES = new HashMap<Integer, String>() {{
-        put(0, "Добавить студента");
+        put(0, "Студенты");
+        put(1, "Группы");
     }};
 
     public DeanOffice() {
