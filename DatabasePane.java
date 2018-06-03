@@ -1,16 +1,27 @@
 package com.project.database;
 
+import oracle.jdbc.OracleTypes;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
-class DeanOffice {
-    private JTabbedPane tabbedPane;
-    private JPanel panel1;
+public class DatabasePane extends JSplitPane {
+
+    private JPanel panel;
+    private JSplitPane databaseSplitPane;
+
+    private JTabbedPane addStudentPane;
     private final DatabaseConnection dbConnection;
-    private JPanel databasePane;
 
-    /* JTextField firstNameTextField;
+    private JTextField firstNameTextField;
     private JTextField patherNameTextField;
     private JTextField lastNameTextField;
     private JComboBox<ComboItem> groupComboBox;
@@ -27,31 +38,25 @@ class DeanOffice {
     private JPanel buttonsPanel;
     private JButton updateStudentButton;
     private JButton deleteStudentButton;
-    */
+    private JPanel databasePane;
 
     private static final Map<Integer, String> PANE_TITLES = new HashMap<Integer, String>() {{
         put(0, "Добавить студента");
     }};
-    /*private static final String FIRST_NAME_TEXT = "Имя";
+    private static final String FIRST_NAME_TEXT = "Имя";
     private static final String LAST_NAME_TEXT = "Фамилия";
     private static final String PATHER_NAME_TEXT = "Отчество";
     private static final String GROUP_TEXT = "Группа";
 
     private static final String ADD_BUTTON_TEXT = "Создать";
     private static final String UPDATE_BUTTON_TEXT = "Обновить";
-    private static final String DELETE_BUTTON_TEXT = "Удалить";*/
+    private static final String DELETE_BUTTON_TEXT = "Удалить";
 
     private int currentRowId = 0;
 
-    public DeanOffice() {
-        System.out.println("wtf");
-        for (int i = 0; i < tabbedPane.getTabCount(); ++i) {
-            tabbedPane.setTitleAt(i, PANE_TITLES.get(i));
-        }
+    public DatabasePane() {
 
-        dbConnection = new DatabaseConnection();
-
-        /*lastNameLabel.setText(LAST_NAME_TEXT);
+        lastNameLabel.setText(LAST_NAME_TEXT);
         firstNameLabel.setText(FIRST_NAME_TEXT);
         patherNameLabel.setText(PATHER_NAME_TEXT);
         groupNameLabel.setText(GROUP_TEXT);
@@ -60,9 +65,11 @@ class DeanOffice {
         updateStudentButton.setText(UPDATE_BUTTON_TEXT);
         deleteStudentButton.setText(DELETE_BUTTON_TEXT);
 
+        /*for (int i = 0; i < addStudentPane.getTabCount(); ++i) {
+            addStudentPane.setTitleAt(i, PANE_TITLES.get(i));
+        }*/
 
-
-
+        dbConnection = new DatabaseConnection();
 
         groupComboBox.removeAllItems();
         initialiseGroups();
@@ -73,9 +80,9 @@ class DeanOffice {
             e.printStackTrace();
         }
 
-        addStudentButton.addActionListener(new AddStudentButtonClicked());
-        updateStudentButton.addActionListener(new UpdateStudentButtonClicked());
-        deleteStudentButton.addActionListener(new DeleteStudentButtonClicked());
+        addStudentButton.addActionListener(new DatabasePane.AddStudentButtonClicked());
+        updateStudentButton.addActionListener(new DatabasePane.UpdateStudentButtonClicked());
+        deleteStudentButton.addActionListener(new DatabasePane.DeleteStudentButtonClicked());
 
         studentsTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -112,18 +119,19 @@ class DeanOffice {
                     e.printStackTrace();
                 }
             }
-        });*/
+        });
     }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("DeanOffice");
-        frame.setContentPane(new DeanOffice().panel1);
+        frame.setContentPane(new DatabasePane().panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
+        System.out.println("packed frame");
         frame.setVisible(true);
     }
 
-    /*private void initialiseGroups() {
+    private void initialiseGroups() {
         final String GROUP_NAME_COLUMN = "GROUP_NAME";
         final String GROUP_ID_COLUMN = "GROUP_ID";
 
@@ -241,5 +249,5 @@ class DeanOffice {
                 e1.printStackTrace();
             }
         }
-    }*/
+    }
 }
