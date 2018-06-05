@@ -201,36 +201,16 @@ public class MarksPane {
             ComboItem selectedSubject = (ComboItem) subjectComboBox.getSelectedItem();
             ComboItem selectedTeacher = (ComboItem) teacherComboBox.getSelectedItem();
             String markValue = (String) markComboBox.getSelectedItem();
-//            String date = datePicker.getModel().getValue().toString();
-            java.sql.Date date = (java.sql.Date) datePicker.getModel().getValue();
-            System.out.println("sqlDate.toString = " + date.toString());
 
-
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
-            String dateInString = "7-Jun-2013";
-
-            String formatted_date = null;
-            try {
-
-                Date parsed_date = formatter.parse(dateInString);
-                System.out.println("parsed_date = " + parsed_date);
-                formatted_date = formatter.format(date);
-                System.out.println("formatted date = " + formatted_date);
-
-            } catch (ParseException e1) {
-                e1.printStackTrace();
-            }
-
+            String date = getSqlDateString();
 
             SqlParameter[] parameters = new SqlParameter[] {
                     new SqlParameter(Integer.toString(selectedStudent.getId()), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
                     new SqlParameter(Integer.toString(selectedSubject.getId()), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
                     new SqlParameter(Integer.toString(selectedTeacher.getId()), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
                     new SqlParameter(markValue, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-                    new SqlParameter(formatted_date, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
+                    new SqlParameter(date, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
             };
-
-            System.out.println(markValue + " " + date);
 
             try {
                 dbConnection.executeProcedure("INSERT_MARK", parameters);
@@ -244,11 +224,20 @@ public class MarksPane {
     private class UpdateButtonClicked implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            ComboItem selectedStudent = (ComboItem) studentComboBox.getSelectedItem();
+            ComboItem selectedSubject = (ComboItem) subjectComboBox.getSelectedItem();
+            ComboItem selectedTeacher = (ComboItem) teacherComboBox.getSelectedItem();
+            String markValue = (String) markComboBox.getSelectedItem();
+
+            String date = getSqlDateString();
+
             SqlParameter[] parameters = new SqlParameter[] {
-//                    new SqlParameter(Integer.toString(currentRowId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-//                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-//                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-//                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
+                    new SqlParameter(Integer.toString(currentRowId), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(Integer.toString(selectedStudent.getId()), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(Integer.toString(selectedSubject.getId()), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(Integer.toString(selectedTeacher.getId()), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(markValue, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(date, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
             };
 
             try {
@@ -337,5 +326,19 @@ public class MarksPane {
         String[] marks = {"2", "3", "4", "5"};
 
         markComboBox.setModel(new DefaultComboBoxModel(marks));
+    }
+
+    private String getSqlDateString() {
+        java.sql.Date date = (java.sql.Date) datePicker.getModel().getValue();
+        String dateString = date.toString();
+
+        String formatted_date = null;
+        try {
+            Date parsed_date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+            formatted_date = new SimpleDateFormat("dd-MMM-yyyy").format(parsed_date);
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+        }
+        return formatted_date;
     }
 }
