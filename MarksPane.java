@@ -107,6 +107,8 @@ public class MarksPane {
                     ResultSet resultSet = dbConnection.executeProcedure("SELECT_MARK", parameters);
 
                     while(resultSet.next()) {
+                        currentRowId = resultSet.getInt("id");
+
                         int studentId = resultSet.getInt("student_id");
                         String studentName = resultSet.getString("student_name");
                         studentComboBox.setSelectedItem(new ComboItem(studentId, studentName));
@@ -132,8 +134,6 @@ public class MarksPane {
                         datePicker.getModel().setMonth(localDate.getMonthValue()-1);
                         datePicker.getModel().setDay(localDate.getDayOfMonth());
                         datePicker.getModel().setSelected(true);
-
-                        currentRowId = resultSet.getInt("id");
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
