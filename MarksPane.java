@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -102,11 +104,33 @@ public class MarksPane {
                     ResultSet resultSet = dbConnection.executeProcedure("SELECT_MARK", parameters);
 
                     while(resultSet.next()) {
-                        /*firstNameTextField.setText(resultSet.getString("first_name"));
-                        lastNameTextField.setText(resultSet.getString("last_name"));
-                        patherNameTextField.setText(resultSet.getString("pather_name"));
+                        int studentId = resultSet.getInt("student_id");
+                        String studentName = resultSet.getString("student_name");
+                        studentComboBox.setSelectedItem(new ComboItem(studentId, studentName));
 
-                        currentRowId = resultSet.getInt("people_id");*/
+                        int subjectId = resultSet.getInt("subject_id");
+                        String subjectName = resultSet.getString("subject_name");
+                        subjectComboBox.setSelectedItem(new ComboItem(subjectId, subjectName));
+
+                        int teacherId = resultSet.getInt("teacher_id");
+                        String teacherName = resultSet.getString("teacher_name");
+                        teacherComboBox.setSelectedItem(new ComboItem(teacherId, teacherName));
+
+                        int markValue = resultSet.getInt("mark_value");
+                        markComboBox.setSelectedIndex(markValue-2);
+
+
+                        java.sql.Date date = resultSet.getDate("mark_date");
+                        String strDate = resultSet.getString("mark_date");
+                        System.out.println(strDate);
+                        LocalDate localDate = date.toLocalDate();
+
+                        datePicker.getModel().setYear(localDate.getYear());
+                        datePicker.getModel().setMonth(localDate.getMonthValue()-1);
+                        datePicker.getModel().setDay(localDate.getDayOfMonth());
+                        datePicker.getModel().setSelected(true);
+
+                        currentRowId = resultSet.getInt("id");
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -149,7 +173,7 @@ public class MarksPane {
                 new SqlParameter("",SqlParameter.parameterDirections.OUT, OracleTypes.CURSOR),
         };
 
-        ResultSet resultSet = dbConnection.executeProcedure("SELECT_TEACHERS", parameters);
+        ResultSet resultSet = dbConnection.executeProcedure("SELECT_MARKS", parameters);
         DefaultTableModel tableModel = buildTableModel(resultSet);
         dbTable.setModel(tableModel);
     }
@@ -160,8 +184,11 @@ public class MarksPane {
         properties.put("test.today", "Today");
         properties.put("text.month", "Month");
         properties.put("text.year", "Year");
+        model.setDate( 2014, 8, 24 );
         JDatePanelImpl datePanel = new JDatePanelImpl(model, properties);
         datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+
+        System.out.println(datePicker.getModel().getValue());
     }
 
     private class CreateButtonClicked implements ActionListener {
