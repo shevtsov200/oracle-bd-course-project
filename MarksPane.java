@@ -4,6 +4,7 @@ import net.codejava.swing.DateLabelFormatter;
 import oracle.jdbc.OracleTypes;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.SqlDateModel;
 import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
@@ -15,6 +16,8 @@ import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Properties;
@@ -179,7 +182,7 @@ public class MarksPane {
     }
 
     private void createUIComponents() {
-        UtilDateModel model = new UtilDateModel();
+        SqlDateModel model = new SqlDateModel();
         Properties properties = new Properties();
         properties.put("test.today", "Today");
         properties.put("text.month", "Month");
@@ -194,14 +197,43 @@ public class MarksPane {
     private class CreateButtonClicked implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            ComboItem selectedStudent = (ComboItem) studentComboBox.getSelectedItem();
+            ComboItem selectedSubject = (ComboItem) subjectComboBox.getSelectedItem();
+            ComboItem selectedTeacher = (ComboItem) teacherComboBox.getSelectedItem();
+            String markValue = (String) markComboBox.getSelectedItem();
+//            String date = datePicker.getModel().getValue().toString();
+            java.sql.Date date = (java.sql.Date) datePicker.getModel().getValue();
+            System.out.println("sqlDate.toString = " + date.toString());
+
+
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
+            String dateInString = "7-Jun-2013";
+
+            String formatted_date = null;
+            try {
+
+                Date parsed_date = formatter.parse(dateInString);
+                System.out.println("parsed_date = " + parsed_date);
+                formatted_date = formatter.format(date);
+                System.out.println("formatted date = " + formatted_date);
+
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+
+
             SqlParameter[] parameters = new SqlParameter[] {
-//                    new SqlParameter(lastNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-//                    new SqlParameter(firstNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
-//                    new SqlParameter(patherNameTextField.getText(), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
+                    new SqlParameter(Integer.toString(selectedStudent.getId()), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(Integer.toString(selectedSubject.getId()), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(Integer.toString(selectedTeacher.getId()), SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(markValue, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR),
+                    new SqlParameter(formatted_date, SqlParameter.parameterDirections.IN, OracleTypes.VARCHAR)
             };
 
+            System.out.println(markValue + " " + date);
+
             try {
-                dbConnection.executeProcedure("INSERT_TEACHER", parameters);
+                dbConnection.executeProcedure("INSERT_MARK", parameters);
                 populateTable();
             } catch (SQLException e1) {
                 e1.printStackTrace();
@@ -220,7 +252,7 @@ public class MarksPane {
             };
 
             try {
-                dbConnection.executeProcedure("UPDATE_TEACHER", parameters);
+                dbConnection.executeProcedure("UPDATE_MARK", parameters);
                 populateTable();
             } catch (SQLException e1) {
                 e1.printStackTrace();
@@ -236,7 +268,7 @@ public class MarksPane {
             };
 
             try {
-                dbConnection.executeProcedure("DELETE_TEACHER", parameters);
+                dbConnection.executeProcedure("DELETE_MARK", parameters);
                 populateTable();
             } catch (SQLException e1) {
                 e1.printStackTrace();
