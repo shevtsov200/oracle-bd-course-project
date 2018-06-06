@@ -17,7 +17,6 @@ public class GroupsPane {
     private JSplitPane groupSplitPane;
     private JTable dbTable;
     private JPanel textFieldsPanel;
-    private JPanel buttonsPanel;
     private JButton updateButton;
     private JButton deleteButton;
     private JButton createButton;
@@ -26,13 +25,10 @@ public class GroupsPane {
     private JTextField yearTextField;
     private JLabel nameLabel;
     private JPanel groupPanel;
+    private ButtonPane buttonsPanel;
 
     private static final String GROUP_NUMBER = "Номер группы";
     private static final String GROUP_YEAR = "Год выпуска";
-
-    private static final String CREATE_BUTTON_TEXT = "Создать";
-    private static final String UPDATE_BUTTON_TEXT = "Обновить";
-    private static final String DELETE_BUTTON_TEXT = "Удалить";
 
     private final DatabaseConnection dbConnection;
 
@@ -43,10 +39,6 @@ public class GroupsPane {
         nameLabel.setText(GROUP_NUMBER);
         yearLabel.setText(GROUP_YEAR);
 
-        createButton.setText(CREATE_BUTTON_TEXT);
-        updateButton.setText(UPDATE_BUTTON_TEXT);
-        deleteButton.setText(DELETE_BUTTON_TEXT);
-
         dbConnection = new DatabaseConnection();
 
         try {
@@ -54,10 +46,6 @@ public class GroupsPane {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        createButton.addActionListener(new GroupsPane.CreateButtonClicked());
-        updateButton.addActionListener(new GroupsPane.UpdateButtonClicked());
-        deleteButton.addActionListener(new GroupsPane.DeleteButtonClicked());
 
         dbTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -128,6 +116,11 @@ public class GroupsPane {
         dbTable.setModel(tableModel);
     }
 
+    private void createUIComponents() {
+        buttonsPanel = new ButtonPane(new GroupsPane.CreateButtonClicked(), new GroupsPane.UpdateButtonClicked(),
+                new GroupsPane.DeleteButtonClicked(), new GroupsPane.AverageButtonClicked());
+    }
+
     private class CreateButtonClicked implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -179,6 +172,24 @@ public class GroupsPane {
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
+        }
+    }
+
+    private class AverageButtonClicked implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    AnalysisPane averageMarkPane = new AnalysisPane("SELECT_GROUP_AVG",currentRowId);
+                    JDialog dialog = new JDialog();
+
+                    dialog.setContentPane(averageMarkPane.getPanel());
+                    dialog.pack();
+                    dialog.setVisible(true);
+                }
+            });
+
         }
     }
 
