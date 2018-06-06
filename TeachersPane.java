@@ -15,9 +15,6 @@ import java.util.Vector;
 
 public class TeachersPane {
     private JTable dbTable;
-    private JButton updateButton;
-    private JButton deleteButton;
-    private JButton createButton;
 
     private JPanel teacherPanel;
     private JSplitPane teacherSplitPane;
@@ -27,16 +24,12 @@ public class TeachersPane {
     private JTextField lastNameTextField;
     private JTextField firstNameTextField;
     private JLabel lastNameLabel;
-    private JPanel buttonsPanel;
     private JPanel textFieldsPanel;
+    private ButtonPane buttonsPanel;
 
     private static final String FIRST_NAME_TEXT = "Имя";
     private static final String LAST_NAME_TEXT = "Фамилия";
     private static final String PATHER_NAME_TEXT = "Отчество";
-
-    private static final String CREATE_BUTTON_TEXT = "Создать";
-    private static final String UPDATE_BUTTON_TEXT = "Обновить";
-    private static final String DELETE_BUTTON_TEXT = "Удалить";
 
     private final DatabaseConnection dbConnection;
 
@@ -47,10 +40,6 @@ public class TeachersPane {
         firstNameLabel.setText(FIRST_NAME_TEXT);
         patherNameLabel.setText(PATHER_NAME_TEXT);
 
-        createButton.setText(CREATE_BUTTON_TEXT);
-        updateButton.setText(UPDATE_BUTTON_TEXT);
-        deleteButton.setText(DELETE_BUTTON_TEXT);
-
         dbConnection = new DatabaseConnection();
 
         try {
@@ -58,10 +47,6 @@ public class TeachersPane {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        createButton.addActionListener(new TeachersPane.CreateButtonClicked());
-        updateButton.addActionListener(new TeachersPane.UpdateButtonClicked());
-        deleteButton.addActionListener(new TeachersPane.DeleteButtonClicked());
 
         dbTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -133,6 +118,11 @@ public class TeachersPane {
         dbTable.setModel(tableModel);
     }
 
+    private void createUIComponents() {
+        buttonsPanel = new ButtonPane(new TeachersPane.CreateButtonClicked(), new TeachersPane.UpdateButtonClicked(),
+                new TeachersPane.DeleteButtonClicked(), new TeachersPane.AverageButtonClicked());
+    }
+
     private class CreateButtonClicked implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -183,6 +173,24 @@ public class TeachersPane {
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
+        }
+    }
+
+    private class AverageButtonClicked implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    AnalysisPane averageMarkPane = new AnalysisPane("SELECT_TEACHER_AVG",currentRowId);
+                    JDialog dialog = new JDialog();
+
+                    dialog.setContentPane(averageMarkPane.getPanel());
+                    dialog.pack();
+                    dialog.setVisible(true);
+                }
+            });
+
         }
     }
 }
