@@ -4,6 +4,7 @@ import oracle.jdbc.OracleTypes;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -38,6 +39,7 @@ public class DatabasePane extends JSplitPane {
     private JPanel buttonsPanel;
     private JButton updateStudentButton;
     private JButton deleteStudentButton;
+    private JButton averageMarkButton;
     private JPanel databasePane;
 
     private static final String FIRST_NAME_TEXT = "Имя";
@@ -109,6 +111,25 @@ public class DatabasePane extends JSplitPane {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        averageMarkButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        AnalysisPane averageMarkPane = new AnalysisPane("SELECT_STUDENT_AVG",5);
+                        JDialog dialog = new JDialog();
+
+                        dialog.setContentPane(averageMarkPane.getPanel());
+                        //dialog.setModal(true);
+                        dialog.pack();
+                        //dialog.setSize(500,500);
+                        dialog.setVisible(true);
+                    }
+                });
+
             }
         });
     }
