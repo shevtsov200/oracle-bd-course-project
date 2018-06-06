@@ -32,24 +32,18 @@ public class DatabasePane extends JSplitPane {
     private JLabel patherNameLabel;
     private JLabel groupNameLabel;
 
-    private JButton addStudentButton;
+
     private JPanel addStudentPanel;
     private JSplitPane studentSplitPane;
     private JTable studentsTable;
+    private ButtonPane buttonPane;
     private JPanel buttonsPanel;
-    private JButton updateStudentButton;
-    private JButton deleteStudentButton;
-    private JButton averageMarkButton;
     private JPanel databasePane;
 
     private static final String FIRST_NAME_TEXT = "Имя";
     private static final String LAST_NAME_TEXT = "Фамилия";
     private static final String PATHER_NAME_TEXT = "Отчество";
     private static final String GROUP_TEXT = "Группа";
-
-    private static final String ADD_BUTTON_TEXT = "Создать";
-    private static final String UPDATE_BUTTON_TEXT = "Обновить";
-    private static final String DELETE_BUTTON_TEXT = "Удалить";
 
     private int currentRowId = 0;
 
@@ -59,10 +53,6 @@ public class DatabasePane extends JSplitPane {
         firstNameLabel.setText(FIRST_NAME_TEXT);
         patherNameLabel.setText(PATHER_NAME_TEXT);
         groupNameLabel.setText(GROUP_TEXT);
-
-        addStudentButton.setText(ADD_BUTTON_TEXT);
-        updateStudentButton.setText(UPDATE_BUTTON_TEXT);
-        deleteStudentButton.setText(DELETE_BUTTON_TEXT);
 
         dbConnection = new DatabaseConnection();
 
@@ -74,10 +64,6 @@ public class DatabasePane extends JSplitPane {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        addStudentButton.addActionListener(new DatabasePane.AddStudentButtonClicked());
-        updateStudentButton.addActionListener(new DatabasePane.UpdateStudentButtonClicked());
-        deleteStudentButton.addActionListener(new DatabasePane.DeleteStudentButtonClicked());
 
         studentsTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -111,25 +97,6 @@ public class DatabasePane extends JSplitPane {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            }
-        });
-        averageMarkButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        AnalysisPane averageMarkPane = new AnalysisPane("SELECT_STUDENT_AVG",5);
-                        JDialog dialog = new JDialog();
-
-                        dialog.setContentPane(averageMarkPane.getPanel());
-                        //dialog.setModal(true);
-                        dialog.pack();
-                        //dialog.setSize(500,500);
-                        dialog.setVisible(true);
-                    }
-                });
-
             }
         });
     }
@@ -192,6 +159,11 @@ public class DatabasePane extends JSplitPane {
         studentsTable.setModel(tableModel);
     }
 
+    private void createUIComponents() {
+        buttonPane = new ButtonPane(new DatabasePane.AddStudentButtonClicked(), new DatabasePane.UpdateStudentButtonClicked(),
+                new DatabasePane.DeleteStudentButtonClicked(), new DatabasePane.AverageButtonClicked());
+    }
+
     private class AddStudentButtonClicked implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -248,6 +220,24 @@ public class DatabasePane extends JSplitPane {
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
+        }
+    }
+
+    private class AverageButtonClicked implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    AnalysisPane averageMarkPane = new AnalysisPane("SELECT_STUDENT_AVG",currentRowId);
+                    JDialog dialog = new JDialog();
+
+                    dialog.setContentPane(averageMarkPane.getPanel());
+                    dialog.pack();
+                    dialog.setVisible(true);
+                }
+            });
+
         }
     }
 }
