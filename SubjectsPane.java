@@ -17,22 +17,16 @@ public class SubjectsPane {
     private JSplitPane subjectSplitPane;
     private JTable dbTable;
     private JPanel textFieldsPanel;
-    private JPanel buttonsPanel;
-    private JButton updateButton;
-    private JButton deleteButton;
-    private JButton createButton;
+
     private JLabel yearLabel;
     private JTextField nameTextField;
     private JTextField yearTextField;
     private JLabel nameLabel;
     private JPanel subjectsPanel;
+    private ButtonPane buttonsPanel;
     private JPanel groupPanel;
 
     private static final String SUBJECT_NAME = "Название предмета";
-
-    private static final String CREATE_BUTTON_TEXT = "Создать";
-    private static final String UPDATE_BUTTON_TEXT = "Обновить";
-    private static final String DELETE_BUTTON_TEXT = "Удалить";
 
     private final DatabaseConnection dbConnection;
 
@@ -41,10 +35,6 @@ public class SubjectsPane {
     public SubjectsPane() {
         nameLabel.setText(SUBJECT_NAME);
 
-        createButton.setText(CREATE_BUTTON_TEXT);
-        updateButton.setText(UPDATE_BUTTON_TEXT);
-        deleteButton.setText(DELETE_BUTTON_TEXT);
-
         dbConnection = new DatabaseConnection();
 
         try {
@@ -52,10 +42,6 @@ public class SubjectsPane {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        createButton.addActionListener(new SubjectsPane.CreateButtonClicked());
-        updateButton.addActionListener(new SubjectsPane.UpdateButtonClicked());
-        deleteButton.addActionListener(new SubjectsPane.DeleteButtonClicked());
 
         dbTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -124,6 +110,11 @@ public class SubjectsPane {
         dbTable.setModel(tableModel);
     }
 
+    private void createUIComponents() {
+        buttonsPanel = new ButtonPane(new SubjectsPane.CreateButtonClicked(), new SubjectsPane.UpdateButtonClicked(),
+                new SubjectsPane.DeleteButtonClicked(), new SubjectsPane.AverageButtonClicked());
+    }
+
     private class CreateButtonClicked implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -172,6 +163,24 @@ public class SubjectsPane {
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
+        }
+    }
+
+    private class AverageButtonClicked implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    AnalysisPane averageMarkPane = new AnalysisPane("SELECT_SUBJECT_AVG",currentRowId);
+                    JDialog dialog = new JDialog();
+
+                    dialog.setContentPane(averageMarkPane.getPanel());
+                    dialog.pack();
+                    dialog.setVisible(true);
+                }
+            });
+
         }
     }
 }

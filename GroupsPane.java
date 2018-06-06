@@ -17,9 +17,7 @@ public class GroupsPane {
     private JSplitPane groupSplitPane;
     private JTable dbTable;
     private JPanel textFieldsPanel;
-    private JButton updateButton;
-    private JButton deleteButton;
-    private JButton createButton;
+
     private JLabel yearLabel;
     private JTextField nameTextField;
     private JTextField yearTextField;
