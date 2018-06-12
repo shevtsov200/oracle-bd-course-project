@@ -4,20 +4,17 @@ import oracle.jdbc.OracleTypes;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
-public class DatabasePane extends JSplitPane {
+public class StudentsPane extends JSplitPane {
 
     private JPanel panel;
-    private JSplitPane databaseSplitPane;
+    private JSplitPane studentsSplitPane;
 
     private JTabbedPane addStudentPane;
     private final DatabaseConnection dbConnection;
@@ -33,7 +30,7 @@ public class DatabasePane extends JSplitPane {
     private JLabel groupNameLabel;
 
 
-    private JPanel addStudentPanel;
+    private JPanel textFieldsPanel;
     private JSplitPane studentSplitPane;
     private JTable studentsTable;
     private ButtonPane buttonPane;
@@ -47,7 +44,7 @@ public class DatabasePane extends JSplitPane {
 
     private int currentRowId = 0;
 
-    public DatabasePane() {
+    public StudentsPane() {
 
         lastNameLabel.setText(LAST_NAME_TEXT);
         firstNameLabel.setText(FIRST_NAME_TEXT);
@@ -101,15 +98,6 @@ public class DatabasePane extends JSplitPane {
         });
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("DeanOffice");
-        frame.setContentPane(new DatabasePane().panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        System.out.println("packed frame");
-        frame.setVisible(true);
-    }
-
     private DefaultTableModel buildTableModel(ResultSet resultSet) throws SQLException {
 
         ResultSetMetaData metaData = resultSet.getMetaData();
@@ -160,8 +148,8 @@ public class DatabasePane extends JSplitPane {
     }
 
     private void createUIComponents() {
-        buttonPane = new ButtonPane(new DatabasePane.AddStudentButtonClicked(), new DatabasePane.UpdateStudentButtonClicked(),
-                new DatabasePane.DeleteStudentButtonClicked(), new DatabasePane.AverageButtonClicked());
+        buttonPane = new ButtonPane(new StudentsPane.AddStudentButtonClicked(), new StudentsPane.UpdateStudentButtonClicked(),
+                new StudentsPane.DeleteStudentButtonClicked(), new StudentsPane.AverageButtonClicked());
     }
 
     private class AddStudentButtonClicked implements ActionListener {

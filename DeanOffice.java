@@ -21,6 +21,8 @@ class DeanOffice {
         put(4, "Оценки");
     }};
 
+    private static final String PROGRAM_NAME = "Деканат";
+
     public DeanOffice() {
         System.out.println("wtf");
         for (int i = 0; i < tabbedPane.getTabCount(); ++i) {
@@ -29,7 +31,7 @@ class DeanOffice {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("DeanOffice");
+        JFrame frame = new JFrame(PROGRAM_NAME);
         frame.setContentPane(new DeanOffice().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

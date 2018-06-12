@@ -25,7 +25,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <nested-form id="b340d" form-file="com/project/database/DatabasePane.form">
+              <nested-form id="b340d" form-file="com/project/database/StudentsPane.form">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>

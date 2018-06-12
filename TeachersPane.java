@@ -79,15 +79,6 @@ public class TeachersPane {
         });
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("DeanOffice");
-        frame.setContentPane(new TeachersPane().teacherPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        System.out.println("packed frame");
-        frame.setVisible(true);
-    }
-
     private DefaultTableModel buildTableModel(ResultSet resultSet) throws SQLException {
 
         ResultSetMetaData metaData = resultSet.getMetaData();
