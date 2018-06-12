@@ -1,0 +1,69 @@
+CREATE OR REPLACE PACKAGE types
+AS
+    TYPE ref_cursor IS REF CURSOR;
+END;
+/
+-- get the subject using id
+CREATE OR REPLACE FUNCTION SELECT_SUBJECT(
+    SUBJECT_ID_PARAMETER INTEGER
+)
+RETURN types.ref_cursor
+AS
+    subjects_cursor types.ref_cursor;
+BEGIN
+    OPEN subjects_cursor FOR
+        SELECT s.SUBJECT_ID, s.SUBJECT_NAME
+        FROM
+        SUBJECTS s
+        WHERE s.SUBJECT_ID = SUBJECT_ID_PARAMETER;
+    RETURN subjects_cursor;
+END;
+/
+-- get all the subjects
+CREATE OR REPLACE FUNCTION SELECT_SUBJECTS
+RETURN types.ref_cursor
+AS
+    subjects_cursor types.ref_cursor;
+BEGIN
+    OPEN subjects_cursor FOR
+        SELECT s.SUBJECT_ID, s.SUBJECT_NAME
+        FROM
+        SUBJECTS s;
+    RETURN subjects_cursor;
+END;
+/
+-- create a new subject
+CREATE OR REPLACE PROCEDURE INSERT_SUBJECT (
+    SUBJECT_NAME_PARAMETER VARCHAR
+)
+IS
+BEGIN
+    INSERT INTO SUBJECTS
+    (SUBJECT_NAME)
+    VALUES
+    (SUBJECT_NAME_PARAMETER);
+END;
+/
+-- update the subject using id
+CREATE OR REPLACE PROCEDURE UPDATE_SUBJECT (
+    SUBJECT_ID_PARAMETER INTEGER,
+    NAME_PARAMETER VARCHAR
+)
+IS
+BEGIN
+    UPDATE SUBJECTS s
+    SET s.SUBJECT_NAME = NAME_PARAMETER
+    WHERE s.SUBJECT_ID = SUBJECT_ID_PARAMETER;
+END;
+/
+-- delete the subject using id
+CREATE OR REPLACE PROCEDURE DELETE_SUBJECT (
+    SUBJECT_ID_PARAMETER INTEGER
+)
+IS
+BEGIN
+    DELETE
+    FROM SUBJECTS s
+    WHERE s.SUBJECT_ID = SUBJECT_ID_PARAMETER;
+END;
+/
